@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Notes</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .notes {
+            display: grid;
+            gap: 16px;
+        }
+
+        .note-card {
+            display: block;
+            padding: 20px 24px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #222;
+
+            transition: 
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .note-card:hover {
+            transform: translateY(-3px);
+            border-color: #6366f1;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .note-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .note-description {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .arrow {
+            float: right;
+            font-size: 20px;
+            color: #6366f1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 40px auto;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>My Notes</h1>
+
+        <p class="subtitle">
+            Notes and concepts I've studied
+        </p>
+
+        <div class="notes">
+
+            <a class="note-card" href="Linear_regression.html">
+                <span class="arrow">→</span>
+
+                <div class="note-title">
+                    Linear Regression
+                </div>
+
+                <div class="note-description">
+                    Notes on linear regression, predictions, and the least squares method.
+                </div>
+            </a>
+
+
+            <a class="note-card" href="logistic_regression_notes.html">
+                <span class="arrow">→</span>
+
+                <div class="note-title">
+                    Logistic Regression
+                </div>
+
+                <div class="note-description">
+                    Notes on logistic regression and binary classification.
+                </div>
+            </a>
+
+        </div>
+
+        <footer>
+            More notes coming soon...
+        </footer>
+
+    </div>
+
+</body>
+</html>
+
