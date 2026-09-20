@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logistic Regression — Lab Notebook</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<style>
+  :root{
+    --paper:#FBFBF6;
+    --paper-line: rgba(59, 96, 140, 0.09);
+    --ink:#1F2C4C;
+    --ink-soft:#3A4A6B;
+    --text:#32323b;
+    --muted:#6c6d78;
+    --red:#B4402F;
+    --red-bg:#FBEAE7;
+    --red-line:#E6BDB4;
+    --green:#2C7A57;
+    --green-bg:#E9F5EE;
+    --green-line:#BEE0CC;
+    --amber:#B9791A;
+    --amber-bg:#FBF0D9;
+    --amber-line:#EAD09B;
+    --blue:#2F5E93;
+    --blue-bg:#E9F1FA;
+    --blue-line:#BFD7ED;
+    --code-bg:#1B2036;
+    --code-text:#E7E5D9;
+    --card:#FFFFFE;
+    --border:#DFDACB;
+    --border-blue:#D2DEEB;
+    --radius:10px;
+    --maxw:760px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation:none !important; transition:none !important;}
+  }
+
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, var(--paper-line) 0 1px, transparent 1px 28px),
+      repeating-linear-gradient(90deg, var(--paper-line) 0 1px, transparent 1px 28px),
+      var(--paper);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--amber-bg); color:var(--ink); }
+
+  a{ color:var(--blue); }
+
+  #progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--red), var(--amber), var(--green), var(--blue));
+    z-index:1000; transition:width .1s linear;
+  }
+
+  .layout{
+    display:flex;
+    max-width:1180px;
+    margin:0 auto;
+    align-items:flex-start;
+  }
+
+  /* ---- Sidebar ---- */
+  nav.toc{
+    position:sticky; top:0;
+    height:100vh;
+    width:230px;
+    flex-shrink:0;
+    padding:34px 14px 34px 28px;
+    overflow-y:auto;
+    border-right:1px solid var(--border-blue);
+  }
+  .toc-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 14px 0;
+  }
+  .toc ol{ list-style:none; margin:0; padding:0; }
+  .toc li{ margin:0; }
+  .toc a{
+    display:flex; gap:8px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    font-size:13.5px;
+    padding:6px 8px;
+    border-radius:6px;
+    border-left:2px solid transparent;
+  }
+  .toc a .n{ font-family:'JetBrains Mono', monospace; color:var(--muted); font-size:12px; }
+  .toc a:hover{ background:var(--blue-bg); }
+  .toc a.active{
+    color:var(--ink); font-weight:600;
+    border-left:2px solid var(--blue);
+    background:var(--blue-bg);
+  }
+  .toc-extra a{ color:var(--red); }
+  .toc-extra a.active{ border-left-color:var(--red); background:var(--red-bg); color:var(--red); }
+  .toc-final a{ color:var(--green); }
+  .toc-final a.active{ border-left-color:var(--green); background:var(--green-bg); color:var(--green); }
+
+  /* ---- Main ---- */
+  main{ flex:1; min-width:0; padding:0 28px 120px; }
+  .wrap{ max-width:var(--maxw); margin:0 auto; }
+
+  header.hero{ padding:56px 0 20px; }
+  .kicker{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:10px;
+  }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:44px;
+    line-height:1.08;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+  .subtitle{ font-size:16.5px; color:var(--ink-soft); max-width:56ch; margin-bottom:6px; }
+  .subtitle strong{ color:var(--ink); }
+
+  h2.section-title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:27px;
+    color:var(--ink);
+    margin:64px 0 6px;
+    display:flex; align-items:baseline; gap:12px;
+    scroll-margin-top:24px;
+  }
+  h2.section-title .idx{
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px; color:var(--blue); font-weight:600;
+  }
+  .section-sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; }
+
+  h3{ font-family:'Fraunces', serif; font-weight:600; font-size:19px; color:var(--ink); margin:28px 0 8px; }
+
+  p{ margin:0 0 14px; }
+  ul, ol.plain{ padding-left:22px; margin:0 0 14px; }
+  li{ margin-bottom:6px; }
+
+  code{ font-family:'JetBrains Mono', monospace; font-size:0.88em; background:var(--blue-bg); padding:1px 5px; border-radius:4px; color:var(--ink-soft); }
+  pre code{ background:none; padding:0; color:inherit; }
+  pre{
+    background:var(--code-bg); color:var(--code-text);
+    padding:16px 18px; border-radius:var(--radius);
+    overflow-x:auto; font-size:13.3px; line-height:1.55;
+    margin:14px 0 18px;
+  }
+
+  .flow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.6px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin:14px 0 18px;
+    color:var(--ink-soft);
+    white-space:pre-wrap;
+    line-height:1.7;
+  }
+
+  .katex-display{ overflow-x:auto; overflow-y:hidden; padding:4px 0; }
+
+  .boxed-eq{
+    border:1.5px solid var(--amber-line);
+    background:var(--amber-bg);
+    border-radius:var(--radius);
+    padding:14px 18px 8px;
+    margin:16px 0 20px;
+  }
+  .boxed-eq .label{ font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); margin-bottom:2px; }
+
+  /* ---- Callouts ---- */
+  .callout{
+    border-radius:var(--radius);
+    padding:14px 18px;
+    margin:16px 0 20px;
+    border:1.5px solid;
+    font-size:14.8px;
+  }
+  .callout .clabel{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+    font-weight:600; margin-bottom:6px; display:block;
+  }
+  .callout p:last-child{ margin-bottom:0; }
+  .callout.confusion{ background:var(--red-bg); border-color:var(--red-line); }
+  .callout.confusion .clabel{ color:var(--red); }
+  .callout.correction{ background:var(--green-bg); border-color:var(--green-line); }
+  .callout.correction .clabel{ color:var(--green); }
+  .callout.insight{ background:var(--amber-bg); border-color:var(--amber-line); }
+  .callout.insight .clabel{ color:var(--amber); }
+
+  /* ---- Cards / widgets ---- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border-blue);
+    border-radius:14px;
+    padding:22px 24px;
+    margin:18px 0 24px;
+  }
+  .card h4{ margin:0 0 12px; font-family:'Fraunces', serif; font-size:16.5px; color:var(--ink); }
+
+  /* Sigmoid widget */
+  .sig-widget{ display:flex; gap:24px; flex-wrap:wrap; align-items:center; }
+  .sig-svg-wrap{ flex:1 1 320px; min-width:280px; }
+  .sig-controls{ flex:1 1 220px; min-width:220px; }
+  .sig-readout{ display:flex; gap:18px; margin-bottom:14px; }
+  .sig-readout .stat{ background:var(--blue-bg); border-radius:8px; padding:8px 14px; }
+  .sig-readout .stat .lbl{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+  .sig-readout .stat .val{ font-family:'JetBrains Mono',monospace; font-size:20px; color:var(--ink); font-weight:600; }
+  input[type=range]{ width:100%; accent-color:var(--blue); margin:6px 0 14px; }
+  .preset-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px;
+    background:var(--paper); border:1px solid var(--border-blue);
+    color:var(--ink-soft); padding:7px 11px; border-radius:7px;
+    cursor:pointer;
+  }
+  .btn:hover{ background:var(--blue-bg); border-color:var(--blue); color:var(--ink); }
+  .btn.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .sig-note{ font-size:13px; color:var(--muted); margin-top:10px; }
+
+  /* Matrix widget */
+  .matrix-widget table{ border-collapse:collapse; font-family:'JetBrains Mono', monospace; font-size:14px; }
+  .matrix-widget td, .matrix-widget th{
+    border:1px solid var(--border-blue); padding:9px 16px; text-align:center;
+    transition:background .15s, color .15s;
+  }
+  .matrix-widget th{ background:var(--paper); color:var(--muted); font-weight:500; font-size:12px; }
+  .matrix-widget td.hl-row{ background:var(--amber-bg); color:var(--ink); font-weight:600; }
+  .matrix-widget td.hl-col{ background:var(--blue-bg); color:var(--ink); font-weight:600; }
+  .matrix-widget td.hl-both{ background:var(--green-bg); color:var(--ink); font-weight:700; }
+  .matrix-btns{ display:flex; gap:20px; margin-top:16px; flex-wrap:wrap; }
+  .matrix-btns .grp{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .matrix-btns .grp span{ font-size:12px; color:var(--muted); margin-right:4px; }
+  .matrix-readout{ margin-top:12px; font-size:13.5px; color:var(--ink-soft); min-height:20px; }
+
+  /* Code toggle */
+  .toggle-row{ display:flex; gap:8px; margin-bottom:0; }
+  .toggle-row .btn{ flex:1; }
+  .code-pane{ display:none; }
+  .code-pane.active{ display:block; }
+
+  /* Mistakes accordion */
+  details.mistake{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); margin-bottom:12px; overflow:hidden;
+  }
+  details.mistake summary{
+    cursor:pointer; list-style:none; padding:14px 18px;
+    font-family:'Fraunces', serif; font-weight:600; font-size:15.5px;
+    color:var(--ink); display:flex; align-items:center; gap:10px;
+  }
+  details.mistake summary::-webkit-details-marker{ display:none; }
+  details.mistake summary::before{
+    content:"+"; font-family:'JetBrains Mono',monospace; color:var(--red);
+    font-size:18px; width:18px; text-align:center; flex-shrink:0;
+  }
+  details.mistake[open] summary::before{ content:"–"; }
+  details.mistake summary .tag{
+    margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10.5px;
+    text-transform:uppercase; letter-spacing:.05em; color:var(--muted);
+  }
+  .mistake-body{ padding:0 18px 18px; }
+  .mistake-body .wrong-lbl, .mistake-body .fix-lbl{
+    font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;
+    letter-spacing:.06em; margin:10px 0 4px; font-weight:600;
+  }
+  .mistake-body .wrong-lbl{ color:var(--red); }
+  .mistake-body .fix-lbl{ color:var(--green); }
+
+  /* Loss chart */
+  .loss-chart-wrap{ overflow-x:auto; }
+  .loss-line{ stroke-dasharray:900; stroke-dashoffset:900; animation:draw 1.6s ease forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  /* Learned list */
+  .learned-list{ list-style:none; padding:0; margin:0; counter-reset:learned; }
+  .learned-list li{
+    counter-increment:learned;
+    display:flex; gap:14px; align-items:flex-start;
+    background:var(--card); border:1px solid var(--green-line);
+    border-radius:10px; padding:12px 16px; margin-bottom:10px;
+  }
+  .learned-list li::before{
+    content:counter(learned);
+    font-family:'JetBrains Mono',monospace; font-weight:700; color:#fff;
+    background:var(--green); border-radius:50%;
+    width:24px; height:24px; min-width:24px;
+    display:flex; align-items:center; justify-content:center; font-size:12.5px;
+  }
+
+  footer{ text-align:center; padding:40px 0 10px; color:var(--muted); font-size:12.5px; font-family:'JetBrains Mono', monospace; }
+
+  #top-btn{
+    position:fixed; right:24px; bottom:24px;
+    width:42px; height:42px; border-radius:50%;
+    background:var(--ink); color:#fff; border:none; cursor:pointer;
+    display:none; align-items:center; justify-content:center;
+    font-size:18px; box-shadow:0 4px 14px rgba(0,0,0,.2);
+    z-index:900;
+  }
+
+  a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible{
+    outline:2px solid var(--blue); outline-offset:2px;
+  }
+
+  @media (max-width: 880px){
+    nav.toc{ display:none; }
+    main{ padding:0 18px 100px; }
+    h1.title{ font-size:33px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="layout">
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Notebook Index</p>
+    <ol>
+      <li><a href="#s1"><span class="n">01</span> Linear → Logistic</a></li>
+      <li><a href="#s2"><span class="n">02</span> Sigmoid Function</a></li>
+      <li><a href="#s3"><span class="n">03</span> Bernoulli &amp; Log Loss</a></li>
+      <li><a href="#s4"><span class="n">04</span> Dataset vs Model</a></li>
+      <li><a href="#s5"><span class="n">05</span> Matrix Shapes</a></li>
+      <li><a href="#s6"><span class="n">06</span> Loss vs Gradient</a></li>
+      <li><a href="#s7"><span class="n">07</span> Gradient Derivation</a></li>
+      <li><a href="#s8"><span class="n">08</span> Why Divide by m</a></li>
+      <li><a href="#s9"><span class="n">09</span> Loop Gradient</a></li>
+      <li><a href="#s10"><span class="n">10</span> Vectorized Gradient</a></li>
+      <li><a href="#s11"><span class="n">11</span> Gradient Descent</a></li>
+      <li class="toc-extra"><a href="#s12"><span class="n">12</span> Mistakes I Made</a></li>
+      <li><a href="#s13"><span class="n">13</span> Final Pipeline</a></li>
+      <li><a href="#s14"><span class="n">14</span> Verifying It Works</a></li>
+      <li class="toc-final"><a href="#s15"><span class="n">15</span> What I Learned</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <div class="wrap">
+
+      <header class="hero" id="top">
+        <p class="kicker">Personal Lab Notebook · Machine Learning</p>
+        <h1 class="title">Logistic Regression,<br>built from scratch.</h1>
+        <p class="subtitle">A record of how it actually clicked — not just the formulas, but where I got confused, what corrected it, and the understanding that survived. Written so future-me can <strong>re-derive and re-implement this without memorizing code.</strong></p>
+      </header>
+
+      <div class="card">
+        <h4>The shape of the whole thing, before the details</h4>
+        <div class="sig-widget">
+          <div class="sig-svg-wrap">
+            <svg id="sigSvg" viewBox="0 0 380 220" width="100%" role="img" aria-label="Sigmoid curve with a movable point">
+              <line x1="30" y1="190" x2="360" y2="190" stroke="#C9C2AD" stroke-width="1"/>
+              <line x1="30" y1="20" x2="30" y2="190" stroke="#C9C2AD" stroke-width="1"/>
+              <line x1="195" y1="20" x2="195" y2="190" stroke="#DAD6C8" stroke-width="1" stroke-dasharray="3 3"/>
+              <line x1="30" y1="105" x2="360" y2="105" stroke="#DAD6C8" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="360" y="205" font-size="10" fill="#6c6d78" text-anchor="end" font-family="JetBrains Mono, monospace">z</text>
+              <text x="14" y="24" font-size="10" fill="#6c6d78" font-family="JetBrains Mono, monospace">p</text>
+              <path id="sigCurve" d="" fill="none" stroke="#2F5E93" stroke-width="2.5"/>
+              <circle id="sigDot" cx="195" cy="105" r="6" fill="#B9791A" stroke="#fff" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="sig-controls">
+            <div class="sig-readout">
+              <div class="stat"><div class="lbl">z</div><div class="val" id="zVal">0.00</div></div>
+              <div class="stat"><div class="lbl">p = σ(z)</div><div class="val" id="pVal">0.50</div></div>
+            </div>
+            <input type="range" id="zSlider" min="-10" max="10" step="0.1" value="0" aria-label="z value">
+            <div class="preset-row">
+              <button class="btn" data-z="-9">large negative z</button>
+              <button class="btn" data-z="0">z = 0</button>
+              <button class="btn" data-z="9">large positive z</button>
+            </div>
+            <p class="sig-note">Drag the slider. Notice <em>p</em> is squeezed into (0, 1) no matter how extreme <em>z</em> gets — that's the whole job of sigmoid.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SECTION 1 ============ -->
+      <h2 class="section-title" id="s1"><span class="idx">01</span> Starting Point: Connection with Linear Regression</h2>
+      <p>Logistic regression is easy to mistake for a small variation on linear regression, and honestly, for the first half of the pipeline, that's true. Both start by combining the input features into a single linear score:</p>
+      <div class="boxed-eq"><div class="label">shared by both models</div>$$z = Xw + b$$</div>
+      <p>Everything up to computing <code>z</code> is identical: the same features <code>X</code>, the same kind of weights <code>w</code>, the same bias <code>b</code>, the same matrix multiplication. If you've implemented linear regression, you already know how to build this part of logistic regression.</p>
+      <p>The two models diverge <em>right after</em> <code>z</code> is computed. Linear regression treats <code>z</code> itself as the prediction. Logistic regression refuses to do that, because <code>z</code> is an unbounded real number — it can be <code>-500</code> or <code>3000</code> — and that's not a usable answer to a yes/no question like "will this person buy a house?" A prediction for a binary outcome needs to live on a scale that means something, like a probability between 0 and 1. So logistic regression pushes <code>z</code> through one more function — the sigmoid — before calling anything a "prediction."</p>
+      <p>That one extra step changes everything downstream: the loss function, the interpretation of the output, and the shape of the gradient.</p>
+      <div class="flow">Linear Regression:
+X → linear function → prediction → loss → gradient → update
+
+Logistic Regression:
+X → linear function → sigmoid → probability → log loss → gradient → update</div>
+
+      <!-- ============ SECTION 2 ============ -->
+      <h2 class="section-title" id="s2"><span class="idx">02</span> The Sigmoid Function</h2>
+      <p>Sigmoid is the function that turns the raw linear score into something that can be read as a probability:</p>
+      <div class="boxed-eq"><div class="label">sigmoid</div>$$p = \sigma(z) = \frac{1}{1 + e^{-z}}$$</div>
+      <p>Why this particular function? Because it takes <em>any</em> real number and maps it into the open interval <code>(0, 1)</code>, and it does so smoothly and monotonically — bigger <code>z</code> always means bigger (or equal) <code>p</code>, never a reversal. That monotonic squashing is exactly what lets <code>p</code> be interpreted as <span>\(P(y=1 \mid x)\)</span>: the model's belief that the positive class is correct, given the input.</p>
+      <p>Three anchor points are worth memorizing, and the widget above lets you feel them directly:</p>
+      <ul>
+        <li><strong>Large negative <code>z</code></strong> → <code>e^{-z}</code> explodes → the fraction shrinks toward 0 → <code>p → 0</code> (confident "no").</li>
+        <li><strong><code>z = 0</code></strong> → <code>e^{0} = 1</code> → <code>p = 1/2 = 0.5</code> (total uncertainty).</li>
+        <li><strong>Large positive <code>z</code></strong> → <code>e^{-z} → 0</code> → <code>p → 1</code> (confident "yes").</li>
+      </ul>
+
+      <div class="callout confusion">
+        <span class="clabel">❌ Where I got confused</span>
+        <p>I initially thought that because sigmoid gives a value between 0 and 1, the <em>log loss</em> must also be between 0 and 1 — as if "probability" and "loss" lived on the same scale.</p>
+      </div>
+      <div class="callout correction">
+        <span class="clabel">✅ What's actually true</span>
+        <p>Probability is bounded: <code>0 &lt; p &lt; 1</code>, always. Loss is a completely different quantity — it measures how wrong a probability was, and because it involves a logarithm, it is <strong>not bounded above</strong>. A prediction of <code>p = 0.0001</code> when the true label is <code>1</code> produces a loss close to <code>9.2</code>, and the loss grows without limit as <code>p → 0</code>. Sigmoid's output range says nothing about the loss function's range — they answer different questions.</p>
+      </div>
+
+      <!-- ============ SECTION 3 ============ -->
+      <h2 class="section-title" id="s3"><span class="idx">03</span> Where Log Loss Actually Comes From: Bernoulli → Likelihood</h2>
+      <p>It's easy to treat <code>-[y log(p) + (1-y) log(1-p)]</code> as a formula that was simply handed down. It wasn't. It falls directly out of modeling each label as a coin flip whose bias is <code>p</code> — a <strong>Bernoulli distribution</strong>:</p>
+      <div class="boxed-eq"><div class="label">probability of the observed label, under the model</div>$$P(y \mid x) = p^{y}(1-p)^{1-y}$$</div>
+      <p>Check it against the two possible labels: if <code>y = 1</code>, the exponents collapse the expression to <code>p</code>. If <code>y = 0</code>, it collapses to <code>1-p</code>. One formula, both cases — that's the trick of writing it with exponents on <code>y</code> and <code>1-y</code>.</p>
+      <p>Multiplying these probabilities across a whole dataset gives the <strong>likelihood</strong> of the data under the current weights. Products of many small numbers between 0 and 1 shrink toward zero and are numerically miserable to work with, so we take the log to turn the product into a sum:</p>
+      <div class="boxed-eq"><div class="label">log likelihood, per example</div>$$\log P(y\mid x) = y\log p + (1-y)\log(1-p)$$</div>
+      <p>Training means finding the weights that make the observed labels as likely as possible — <strong>maximum likelihood estimation</strong>. Optimizers are built to minimize things, not maximize them, so we flip the sign and minimize the <em>negative</em> log likelihood instead. That flipped, per-example quantity is exactly log loss (binary cross-entropy):</p>
+      <div class="flow">Bernoulli distribution
+        ↓
+Likelihood
+        ↓
+Log likelihood
+        ↓
+Negative log likelihood
+        ↓
+Log loss / Binary Cross-Entropy</div>
+      <div class="boxed-eq"><div class="label">log loss</div>$$L = -\big[y\log(p) + (1-y)\log(1-p)\big]$$</div>
+      <p>This form also explains something that feels intuitive but is worth deriving: confidently wrong predictions are punished hard. Compare:</p>
+      <ul>
+        <li><code>y = 1</code>, <code>p = 0.9</code> → loss <code>= -log(0.9) ≈ 0.105</code> — small, the model was right and confident.</li>
+        <li><code>y = 1</code>, <code>p = 0.1</code> → loss <code>= -log(0.1) ≈ 2.303</code> — over 20× larger, because the model was confidently <em>wrong</em>.</li>
+      </ul>
+      <p>The logarithm is what creates that asymmetry — as <code>p</code> approaches 0 while the true label is 1, <code>-log(p)</code> shoots toward infinity. This is by design: it forces the model to be humble when it isn't sure.</p>
+
+      <!-- ============ SECTION 4 ============ -->
+      <h2 class="section-title" id="s4"><span class="idx">04</span> What Comes From the Dataset vs. What Comes From the Model</h2>
+      <p>A recurring source of confusion while debugging was blurring together things that come from the data and things the model computes. Keeping this boundary sharp makes every later formula easier to read.</p>
+      <div class="sig-widget" style="gap:32px;">
+        <div class="card" style="flex:1 1 260px; margin:0; border-color:var(--blue-line, var(--border-blue));">
+          <h4 style="color:var(--blue)">From the dataset</h4>
+          <ul style="margin-bottom:0">
+            <li><code>X</code> — the feature values you were given</li>
+            <li><code>y</code> — the actual, correct labels</li>
+          </ul>
+        </div>
+        <div class="card" style="flex:1 1 260px; margin:0; border-color:var(--amber-line);">
+          <h4 style="color:var(--amber)">Learned / computed by the model</h4>
+          <ul style="margin-bottom:0">
+            <li><code>w</code>, <code>b</code> — parameters the model owns and updates</li>
+            <li><code>z = Xw + b</code> — computed, not given</li>
+            <li><code>p = σ(z)</code> — computed, not given</li>
+          </ul>
+        </div>
+      </div>
+      <p><code>p</code> is the model's <em>guess</em> at the answer; <code>y</code> is the dataset's <em>actual</em> answer. The entire point of the loss function is to compare these two things — a computed guess against a given truth — and the entire point of training is to nudge <code>w</code> and <code>b</code> until the guesses land closer to the truth.</p>
+
+      <!-- ============ SECTION 5 ============ -->
+      <h2 class="section-title" id="s5"><span class="idx">05</span> Matrix Shapes — and the Orientation I Kept Getting Backwards</h2>
+      <p>With <code>m</code> training examples and <code>n</code> features, the shapes that make every later equation dimensionally consistent are:</p>
+      <div class="boxed-eq"><div class="label">shapes</div>$$X \in \mathbb{R}^{m \times n} \qquad w \in \mathbb{R}^{n \times 1} \qquad z \in \mathbb{R}^{m \times 1}$$</div>
+      <p>Building <code>X</code> from separate feature arrays with <code>np.column_stack</code> is where the orientation clicked for me:</p>
+      <pre><code class="language-python">age = [20, 30, 40]
+income = [20000, 30000, 40000]
+data = np.column_stack((age, income))</code></pre>
+      <div class="flow">[[20, 20000],
+ [30, 30000],
+ [40, 40000]]
+
+rows    → training examples
+columns → features</div>
+      <p>So <code>data[i][j]</code> reads as: example <code>i</code>, feature <code>j</code>. The widget below makes the two axes physically obvious — click a row button to select one full training example, or a column button to select one feature across every example.</p>
+
+      <div class="card matrix-widget">
+        <h4>data[i] vs. data[:, j] — click to see the difference</h4>
+        <table id="matTable">
+          <tr><th></th><th>col 0 — age</th><th>col 1 — income</th></tr>
+          <tr><th>row 0</th><td data-r="0" data-c="0">20</td><td data-r="0" data-c="1">20000</td></tr>
+          <tr><th>row 1</th><td data-r="1" data-c="0">30</td><td data-r="1" data-c="1">30000</td></tr>
+          <tr><th>row 2</th><td data-r="2" data-c="0">40</td><td data-r="2" data-c="1">40000</td></tr>
+        </table>
+        <div class="matrix-btns">
+          <div class="grp"><span>one example:</span>
+            <button class="btn" data-row="0">data[0]</button>
+            <button class="btn" data-row="1">data[1]</button>
+            <button class="btn" data-row="2">data[2]</button>
+          </div>
+          <div class="grp"><span>one feature:</span>
+            <button class="btn" data-col="0">data[:, 0]</button>
+            <button class="btn" data-col="1">data[:, 1]</button>
+          </div>
+          <button class="btn" id="matClear">clear</button>
+        </div>
+        <p class="matrix-readout" id="matReadout">Nothing selected — every cell belongs to exactly one row (an example) and one column (a feature).</p>
+      </div>
+
+      <div class="callout confusion">
+        <span class="clabel">❌ Where I got confused</span>
+        <p>I mixed up <code>data[i]</code> (a whole training example — a row) with <code>data[:, j]</code> (a whole feature across all examples — a column), and in one version of the loop I accidentally wrote something closer to <code>data[j]</code>, expecting it to give me a feature column.</p>
+      </div>
+      <div class="callout correction">
+        <span class="clabel">✅ What's actually true</span>
+        <p><code>data[i]</code> slices the first axis (rows/examples) → it returns one training example with all of its features. <code>data[:, j]</code> keeps every row but fixes the second axis (columns/features) → it returns one feature's value across every example. <code>data[j]</code> is a row index, not a column index — using it where a feature was intended silently grabs the wrong example entirely, and NumPy won't complain because it's still valid indexing, just not what was meant.</p>
+      </div>
+
+      <!-- ============ SECTION 6 ============ -->
+      <h2 class="section-title" id="s6"><span class="idx">06</span> Loss vs. Gradient — Two Different Questions</h2>
+      <p>These two quantities get used together so often that it's tempting to think of them as one thing. They aren't:</p>
+      <ul>
+        <li><strong>Loss</strong> — <span>\(J(w,b)\)</span> — answers <em>"how bad are my current predictions?"</em> It's a single number summarizing performance right now.</li>
+        <li><strong>Gradient</strong> — <span>\(\nabla J\)</span> — answers <em>"which direction should I change the parameters to make the loss smaller?"</em> It's a direction, not a summary.</li>
+      </ul>
+      <p>The cleanest analogy is an ordinary function like <span>\(f(x) = x^2\)</span>. The value <code>f(x)</code> tells you your current height on the curve. The derivative <code>f'(x) = 2x</code> tells you which way is downhill from where you're standing. Loss is the height; gradient is the slope under your feet.</p>
+      <div class="callout insight">
+        <span class="clabel">💡 Realization</span>
+        <p>The numerical output of <code>log_loss()</code> is <strong>not</strong> directly fed into the gradient calculation — there's no line of code that takes the scalar loss value and plugs it into <code>dw</code>. Instead, the gradient is a completely separate formula, <em>mathematically derived</em> from the loss function using calculus. The loss function and the gradient function share an origin (the same <code>L</code>), but at runtime they are two independent computations over the same <code>p</code>, <code>y</code>, and <code>X</code>.</p>
+      </div>
+
+      <!-- ============ SECTION 7 ============ -->
+      <h2 class="section-title" id="s7"><span class="idx">07</span> Deriving the Gradient, One Chain-Rule Link at a Time</h2>
+      <p>Rather than accept <code>dw = (p - y) * x</code> on faith, it's worth walking the chain that produces it. The weight <code>w_j</code> influences the loss only by first influencing <code>z</code>, which influences <code>p</code>, which finally influences <code>L</code>:</p>
+      <div class="flow">w_j → z → p → L</div>
+      <p>Three functions are stacked here:</p>
+      $$L = -\big[y\log(p) + (1-y)\log(1-p)\big], \qquad p = \sigma(z), \qquad z = w^Tx + b$$
+      <p>Because <code>w_j</code> only reaches <code>L</code> through this chain, the chain rule says its overall effect is the product of each link's local effect:</p>
+      <div class="boxed-eq"><div class="label">chain rule</div>$$\frac{\partial L}{\partial w_j} = \frac{\partial L}{\partial p}\cdot\frac{\partial p}{\partial z}\cdot\frac{\partial z}{\partial w_j}$$</div>
+      <p>Each piece is manageable on its own:</p>
+      <p><strong>1. </strong><span>\(\dfrac{\partial L}{\partial p}\)</span> — differentiating <code>-[y log p + (1-y) log(1-p)]</code> with respect to <code>p</code> gives <code>-y/p + (1-y)/(1-p)</code>.</p>
+      <p><strong>2. </strong><span>\(\dfrac{\partial p}{\partial z}\)</span> — the derivative of sigmoid has a famously tidy closed form:</p>
+      <div class="boxed-eq"><div class="label">sigmoid's own derivative</div>$$\frac{\partial p}{\partial z} = p(1-p)$$</div>
+      <p><strong>3. </strong><span>\(\dfrac{\partial z}{\partial w_j}\)</span> — since <code>z = w_1x_1 + w_2x_2 + \dots + b</code>, the only term containing <code>w_j</code> is <code>w_j x_j</code>, so this derivative is simply <code>x_j</code>.</p>
+      <p>Multiplying all three together, the <code>p(1-p)</code> terms cancel beautifully against the denominators from step 1:</p>
+      <p>$$\left(\frac{-y}{p} + \frac{1-y}{1-p}\right)\cdot p(1-p)\cdot x_j \;=\; (p - y)\,x_j$$</p>
+      <p>That cancellation is the whole reason logistic regression's gradient looks so clean — sigmoid and log loss were built to fit together like this.</p>
+      <div class="boxed-eq"><div class="label">gradient, single example</div>$$\boxed{\dfrac{\partial L}{\partial w_j} = (p-y)\,x_j}$$</div>
+      <p>Averaged over the whole dataset, in matrix form:</p>
+      <div class="boxed-eq"><div class="label">gradient, full dataset</div>
+      $$\boxed{dw = \frac{1}{m}X^{T}(p-y)}$$
+      $$\boxed{db = \frac{1}{m}\sum (p-y)}$$
+      </div>
+      <p>The term <code>(p - y)</code> — the model's probability minus the true label — is the model's <strong>error</strong>. It appears naturally, not by design choice: it's what's left after the calculus, and it has an intuitive reading too — if the model is perfectly calibrated, error is zero and the gradient vanishes; the more wrong <code>p</code> is, the larger the push to correct <code>w</code>.</p>
+
+      <!-- ============ SECTION 8 ============ -->
+      <h2 class="section-title" id="s8"><span class="idx">08</span> Why the <span>\(\frac{1}{m}\)</span>?</h2>
+      <p>The overall loss used for training is the <em>average</em> of the per-example losses, not their raw sum:</p>
+      $$J = \frac{1}{m}\sum_i L_i$$
+      <p>Differentiating an average just differentiates each term and keeps the same averaging constant out front — the <code>1/m</code> doesn't depend on <code>w</code>, so it passes straight through:</p>
+      $$\frac{\partial J}{\partial w} = \frac{1}{m}\sum_i \frac{\partial L_i}{\partial w}$$
+      <p>Substituting the single-example gradient derived above gives the familiar batch formula:</p>
+      $$dw = \frac{1}{m}\sum_i (p_i - y_i)x_i$$
+      <p>Two counts show up in this codebase and they are <strong>not interchangeable</strong>:</p>
+      <ul>
+        <li><code>m</code> — number of training examples (rows of <code>X</code>) — this is what the gradient divides by.</li>
+        <li><code>len(param)</code> — number of features / parameters — this has nothing to do with averaging the gradient.</li>
+      </ul>
+      <p>Technically, nothing stops you from using the raw <em>sum</em> of losses instead of the mean. But then the scale of the gradient would depend on how many training examples you happened to have — a dataset with 10,000 rows would produce gradients roughly 10× larger than the same problem with 1,000 rows, for no reason related to the actual difficulty of the problem. Dividing by <code>m</code> keeps the gradient's scale — and therefore the learning rate that works well — independent of dataset size.</p>
+
+      <!-- ============ SECTION 9 ============ -->
+      <h2 class="section-title" id="s9"><span class="idx">09</span> Gradient by Loops — the Literal Version</h2>
+      <p>Before trusting a vectorized one-liner, it's worth writing the gradient exactly as the math reads: one accumulator per parameter, summed across every example.</p>
+      <pre><code class="language-python">error = p - y
+
+dw = []
+
+for j in range(len(param)):
+    gradient = 0
+
+    for i in range(len(data)):
+        gradient += error[i] * data[i][j]
+
+    gradient /= len(data)
+    dw.append(gradient)
+
+db = np.sum(error) / len(data)</code></pre>
+      <p>The inner line is the entire derivation from Section 7, spelled out per index:</p>
+      <div class="flow">error[i] * data[i][j]
+  =  (error of example i)  ×  (value of feature j for example i)</div>
+      <p>Summing that product over every example <code>i</code>, then dividing by <code>len(data)</code>, produces exactly one number: the gradient for parameter <code>j</code>. Doing that for every <code>j</code> fills out the full <code>dw</code> vector.</p>
+      <p>Two indexing mistakes are easy to make here and both come from the row/column confusion in Section 5:</p>
+      <ul>
+        <li><code>data[j]</code> when <code>j</code> is meant to be a <em>feature</em> index is wrong — <code>data[j]</code> accesses <strong>row</strong> <code>j</code> (a whole training example), not a feature column.</li>
+        <li><code>data[:j]</code> is wrong for a different reason — it's a <em>slice</em> from the start up to row <code>j</code> (still selecting rows), not a single column at all.</li>
+      </ul>
+      <p>The only correct way to grab a full feature column is <code>data[:, j]</code> — keep every row (<code>:</code>), fix the column (<code>j</code>).</p>
+
+      <!-- ============ SECTION 10 ============ -->
+      <h2 class="section-title" id="s10"><span class="idx">10</span> The Vectorized Gradient</h2>
+      <p>Once the loop version is trusted, NumPy can do the same accumulation in one shot using matrix multiplication:</p>
+      <pre><code class="language-python">error = p - y
+
+dw = (data.T @ error) / len(data)
+
+db = np.sum(error) / len(data)</code></pre>
+      <p>Matching the shapes makes it clear why this reproduces the loop exactly:</p>
+      <div class="flow">data.T → n × m
+error  → m       (or m × 1)
+result → n       (one gradient value per parameter)</div>
+      <p>Transposing <code>data</code> turns "rows = examples" into "rows = features," so each row of <code>data.T</code> is one feature's values across all <code>m</code> examples. Multiplying that row by the length-<code>m</code> <code>error</code> vector and summing (which is exactly what matrix multiplication does) reproduces the inner loop's <code>sum over i</code> — but for every feature <code>j</code> simultaneously. The division by <code>len(data)</code> at the end is the same averaging step from Section 8.</p>
+
+      <div class="card">
+        <h4>Compare the two side by side</h4>
+        <div class="toggle-row">
+          <button class="btn active" id="tabLoop">Loop version</button>
+          <button class="btn" id="tabVec">Vectorized version</button>
+        </div>
+        <div class="code-pane active" id="paneLoop">
+<pre><code class="language-python">error = p - y
+dw = []
+for j in range(len(param)):
+    gradient = 0
+    for i in range(len(data)):
+        gradient += error[i] * data[i][j]
+    gradient /= len(data)
+    dw.append(gradient)
+db = np.sum(error) / len(data)</code></pre>
+        </div>
+        <div class="code-pane" id="paneVec">
+<pre><code class="language-python">error = p - y
+dw = (data.T @ error) / len(data)
+db = np.sum(error) / len(data)</code></pre>
+        </div>
+        <p class="sig-note">Same math, same result — the vectorized version just lets NumPy's matrix multiplication do the double loop internally.</p>
+      </div>
+
+      <!-- ============ SECTION 11 ============ -->
+      <h2 class="section-title" id="s11"><span class="idx">11</span> Gradient Descent — Actually Using the Gradient</h2>
+      <p>The gradient only tells you a direction; gradient descent is the rule that turns that direction into an update:</p>
+      <div class="boxed-eq"><div class="label">update rule</div>$$\theta_{\text{new}} = \theta_{\text{old}} - \alpha \nabla J$$</div>
+      <p>where <code>θ</code> stands for whichever parameter is being updated, and <code>α</code> (the learning rate) controls how big a step to take in that downhill direction. In code, for each parameter:</p>
+      <pre><code class="language-python">param -= alpha * grad</code></pre>
+      <p>The choice of <code>*</code> here instead of <code>@</code> matters and is easy to get backwards:</p>
+      <ul>
+        <li><code>*</code> — element-wise (or scalar) multiplication. Each entry of <code>grad</code> is scaled by <code>alpha</code> independently, and the result has the <em>same shape</em> as <code>param</code> — exactly what an update needs.</li>
+        <li><code>@</code> — matrix multiplication. It combines entries across dimensions and generally changes the shape of the result — not what you want when updating a parameter vector element-by-element.</li>
+      </ul>
+      <p>Both parameters follow the identical rule — a weight vector update and a scalar bias update are the same formula, just with different shapes:</p>
+      <pre><code class="language-python">w -= alpha * dw
+b -= alpha * db</code></pre>
+      <p>Repeating "compute z → p → loss → gradient → update" for many iterations is the entire training loop.</p>
+
+      <!-- ============ SECTION 12 ============ -->
+      <h2 class="section-title" id="s12"><span class="idx">12</span> Mistakes I Made</h2>
+      <p class="section-sub">Click each one open. These are kept verbatim-in-spirit because the wrong version is often more instructive than the fix.</p>
+
+      <details class="mistake">
+        <summary>Dataset generation produced impossible / mismatched values <span class="tag">data</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote</p>
+          <pre><code class="language-python">50000 <= income <= 10000          # impossible: lower bound > upper bound
+
+income = np.random.randint(0, 10000, size=n)   # but the house-buying
+                                                # rule assumed incomes
+                                                # like 20,000–50,000</code></pre>
+          <p class="fix-lbl">✓ why it broke things</p>
+          <p>The first line is a condition that can never be true — no number is simultaneously ≥ 50,000 and ≤ 10,000, so any label depending on it was nonsense. Separately, the generator produced incomes in <code>[0, 10000)</code> while the actual decision rule for "did they buy the house" was written assuming incomes in the 20,000–50,000 range. The generated features and the labeling rule were talking about two different worlds, so the labels didn't reflect any real pattern in the features — there was nothing learnable for the model to find.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Bias was an array instead of a single scalar <span class="tag">shape</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote</p>
+          <pre><code class="language-python">bias = np.random.randint(1, 10, size=10)</code></pre>
+          <p class="fix-lbl">✓ what should be true</p>
+          <p>Bias shifts the linear score <code>z = Xw + b</code> the same way for every example — it is one number, <span>\(b \in \mathbb{R}\)</span>, not one bias per training example. Giving it <code>size=10</code> implies ten different biases for ten different rows, which breaks the model definition (and, with a different number of training examples, would also break broadcasting).</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Raw, unscaled features made z explode <span class="tag">scaling</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what happened</p>
+          <p>Feeding raw <code>age</code> (tens) and raw <code>income</code> (tens of thousands) straight into <code>z = w^Tx + b</code> means income alone can push <code>z</code> into the thousands even with small weights, since it's multiplied by a weight of comparable scale to age's.</p>
+          <p class="fix-lbl">✓ why scaling fixes it</p>
+          <p>When <code>|z|</code> gets large, sigmoid saturates — it flattens out to almost exactly 0 or exactly 1, and its derivative <code>p(1-p)</code> collapses toward 0 right along with it. Since the gradient depends on that derivative, learning grinds to a halt in exactly the region where the model is most overconfident. Scaling features so they sit on comparable ranges keeps <code>z</code> in a region where sigmoid is still sensitive to change.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Log loss was missing its first log term <span class="tag">loss</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote (roughly)</p>
+          <pre><code class="language-python">loss = -(y * p + (1 - y) * np.log(1 - p))   # missing np.log(p)</code></pre>
+          <p class="fix-lbl">✓ corrected</p>
+          <pre><code class="language-python">loss = -(
+    y * np.log(p)
+    + (1 - y) * np.log(1 - p)
+)</code></pre>
+          <p>Without <code>np.log</code> on the first term, the formula silently stops matching the derivation in Section 3 — it no longer measures the negative log likelihood, so the reported loss numbers are meaningless even though the code runs without error.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>log(0) → -inf when probabilities hit exactly 0 or 1 <span class="tag">numerical</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what happened</p>
+          <p>When <code>z</code> gets extreme (often <em>because</em> of the scaling problem above), sigmoid can round to exactly <code>0.0</code> or <code>1.0</code> in floating point. Plugging that into <code>np.log(p)</code> or <code>np.log(1-p)</code> gives <code>-inf</code>, which then poisons the loss and the gradient.</p>
+          <p class="fix-lbl">✓ the standard fix — and its limits</p>
+          <pre><code class="language-python">p = np.clip(p, 1e-15, 1 - 1e-15)</code></pre>
+          <p>Clipping keeps <code>p</code> just inside <code>(0, 1)</code> so the log never blows up. But it's important to treat this as damage control, not a real fix: clipping papers over the <em>symptom</em>. If probabilities are hitting the boundary constantly, the underlying cause — usually exploding <code>z</code> from poor feature scaling or a learning rate that's too high — is still there and worth fixing directly.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Gradient indexing repeated the row/column mix-up <span class="tag">indexing</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote (roughly)</p>
+          <pre><code class="language-python">self.data[:j]
+error[j]</code></pre>
+          <p class="fix-lbl">✓ why both are wrong</p>
+          <p><code>self.data[:j]</code> slices <em>rows</em> from the start up to index <code>j</code> — it has nothing to do with selecting feature <code>j</code>; the correct call is <code>self.data[:, j]</code>. <code>error[j]</code> is wrong for a related reason: <code>error</code> has one entry per <em>training example</em> (length <code>m</code>), so indexing it with a feature index <code>j</code> reaches into the wrong axis entirely — it should be indexed by the example index <code>i</code>, as in <code>error[i]</code>.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Divided by the wrong count <span class="tag">m vs n</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote</p>
+          <pre><code class="language-python">gradient /= len(param)   # should divide by number of examples</code></pre>
+          <p class="fix-lbl">✓ corrected</p>
+          <pre><code class="language-python">gradient /= len(data)</code></pre>
+          <p><code>len(param)</code> counts <em>features</em> (n); <code>len(data)</code> counts <em>training examples</em> (m). Section 8 derives the <code>1/m</code> specifically as an average over examples — swapping in the feature count computes a different, meaningless number, and it also silently changes scale whenever the feature count differs from the example count.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>Overwriting dw inside the loop instead of storing each value <span class="tag">accumulation</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote (roughly)</p>
+          <pre><code class="language-python">for j in range(len(param)):
+    dw = gradient_for_feature_j   # overwritten every iteration</code></pre>
+          <p class="fix-lbl">✓ corrected</p>
+          <pre><code class="language-python">dw = []
+for j in range(len(param)):
+    gradient = ...
+    dw.append(gradient)</code></pre>
+          <p>There is one gradient value <em>per parameter</em> — assigning <code>dw = ...</code> inside the loop replaces the previous feature's gradient each time, so by the time the loop ends, <code>dw</code> only holds the last feature's gradient and every earlier one has been thrown away. Appending to a list (or writing into a pre-allocated array) keeps all of them.</p>
+        </div>
+      </details>
+
+      <details class="mistake">
+        <summary>@ used where * was needed in the update step <span class="tag">operators</span></summary>
+        <div class="mistake-body">
+          <p class="wrong-lbl">✗ what I wrote</p>
+          <pre><code class="language-python">param -= alpha @ grad</code></pre>
+          <p class="fix-lbl">✓ corrected</p>
+          <pre><code class="language-python">param -= alpha * grad</code></pre>
+          <p><code>alpha</code> is a plain scalar learning rate — <code>@</code> is matrix multiplication and either fails outright on a scalar or produces something with the wrong shape/meaning. <code>*</code> scales every entry of <code>grad</code> by <code>alpha</code> independently, which is exactly the update rule from Section 11.</p>
+        </div>
+      </details>
+
+      <!-- ============ SECTION 13 ============ -->
+      <h2 class="section-title" id="s13"><span class="idx">13</span> The Final Working Pipeline</h2>
+      <div class="flow">Dataset
+   ↓
+X, y
+   ↓
+Initialize w, b
+   ↓
+z = Xw + b
+   ↓
+p = sigmoid(z)
+   ↓
+calculate log loss
+   ↓
+error = p - y
+   ↓
+calculate dw, db
+   ↓
+w = w - α·dw
+b = b - α·db
+   ↓
+repeat</div>
+      <p>Put together, with clipping for numerical safety and a loss history for later verification:</p>
+      <pre><code class="language-python">import numpy as np
+
+
+
+class LogisticRegresssion:
+
+    def __init__(self,data,output,param,bias):
+        self.data = data
+        self.output = output
+        self.param = param
+        self.bias = bias
+
+    def calculate_z(self):
+        z = self.data @ self.param + self.bias
+        return z 
+
+    def sigmoid(self):
+        z = self.calculate_z()
+
+        p = 1 / (1 + np.exp(-z))
+        return p
+
+    def calculate_loss(self):
+        p = self.sigmoid()
+
+        loss = - (self.output * np.log(p) + (1 - self.output) * np.log(1-p))
+
+        return np.mean(loss)
+
+    def calculate_gradient(self):
+        p = self.sigmoid()
+        y = self.output
+
+        error = p - y
+        dw = []
+        for j in range(len(self.param)):
+            grad = np.sum(error * self.data[:,j]) / len(self.data)
+            dw.append(grad)
+
+        db = np.sum(error)/len(self.data)
+        return np.append(dw,db)
+
+
+    def gradient_descent(self,alpha=0.1,iteration=1000):
+        
+        for i in range(iteration):
+            loss = self.calculate_loss()
+            print("loss_before: ",loss,end=" ")
+            grad_val = self.calculate_gradient()
+
+            self.param -= alpha * grad_val[:-1]
+            self.bias -= alpha * grad_val[-1]
+
+            loss = self.calculate_loss()
+            print("param: ",self.param , " " , self.bias, "after_loss: ",loss)
+
+        return self.param</code></pre>
+
+      <!-- ============ SECTION 14 ============ -->
+      <h2 class="section-title" id="s14"><span class="idx">14</span> How to Verify It Actually Works</h2>
+      <h3>1. Loss should trend down, then flatten</h3>
+      <p>Under full-batch gradient descent with a sane learning rate, <code>loss_history</code> should look roughly like this — decreasing, with diminishing steps as it approaches a floor:</p>
+      <div class="card loss-chart-wrap">
+        <svg viewBox="0 0 560 200" width="100%" role="img" aria-label="Loss decreasing over iterations from 1.44 to 0.25">
+          <line x1="30" y1="180" x2="530" y2="180" stroke="#C9C2AD" stroke-width="1"/>
+          <line x1="30" y1="20" x2="30" y2="180" stroke="#C9C2AD" stroke-width="1"/>
+          <polyline class="loss-line" points="40,26 120,40 200,60 280,85 360,110 440,130 520,145" fill="none" stroke="#B4402F" stroke-width="2.5"/>
+          <g font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6d78">
+            <circle cx="40" cy="26" r="3.5" fill="#B4402F"><title>1.44</title></circle>
+            <circle cx="120" cy="40" r="3.5" fill="#B4402F"><title>1.30</title></circle>
+            <circle cx="200" cy="60" r="3.5" fill="#B4402F"><title>1.10</title></circle>
+            <circle cx="280" cy="85" r="3.5" fill="#B4402F"><title>0.85</title></circle>
+            <circle cx="360" cy="110" r="3.5" fill="#B4402F"><title>0.60</title></circle>
+            <circle cx="440" cy="130" r="3.5" fill="#B4402F"><title>0.40</title></circle>
+            <circle cx="520" cy="145" r="3.5" fill="#B4402F"><title>0.25</title></circle>
+            <text x="40" y="196" text-anchor="middle">iter 1</text>
+            <text x="520" y="196" text-anchor="middle">iter 7</text>
+            <text x="18" y="30" text-anchor="end">1.44</text>
+            <text x="18" y="149" text-anchor="end">0.25</text>
+          </g>
+        </svg>
+        <p class="sig-note">Hover a point for its exact value. A curve like this — dropping fast, then flattening — is the standard sanity check that gradient descent is working.</p>
+      </div>
+
+      <h3>2. Inspect predictions, not just loss</h3>
+      <pre><code class="language-python">p = model.predict_proba(X)
+prediction = (p >= 0.5).astype(int)</code></pre>
+
+      <h3>3. Compute accuracy</h3>
+      <pre><code class="language-python">accuracy = np.mean(prediction == y)</code></pre>
+      <p>Loss and accuracy check different things, and relying on loss alone can be misleading. Loss keeps decreasing whenever probabilities move even slightly closer to the true labels — it's a continuous, fine-grained signal. Accuracy only cares whether the final thresholded class (0.5 cutoff) is right or wrong. A model can improve its loss for a while without its accuracy changing at all (probabilities shifting from 0.6 to 0.7 doesn't flip any predictions), so both checks belong in the verification routine, not just one.</p>
+
+      <!-- ============ SECTION 15 ============ -->
+      <h2 class="section-title" id="s15"><span class="idx">15</span> What I Actually Learned</h2>
+      <ol class="learned-list">
+        <li>Logistic regression is not simply "linear regression + sigmoid" bolted on — the sigmoid changes what the output means, and that changes the loss function and the gradient too.</li>
+        <li>Sigmoid's only job is converting an unbounded linear score into something interpretable as a probability.</li>
+        <li>Log loss isn't an arbitrary formula — it falls out of maximum likelihood under a Bernoulli model of the labels.</li>
+        <li>The dataset supplies <code>X</code> and <code>y</code>; the model supplies (and learns) <code>w</code> and <code>b</code>, and computes <code>z</code> and <code>p</code> from them.</li>
+        <li>Loss measures how bad the current predictions are, right now.</li>
+        <li>Gradient tells you which direction reduces that loss — it's a slope, not a score.</li>
+        <li>The gradient is derived from the loss via calculus; the two are connected mathematically, but the numeric loss value is never plugged directly into the gradient computation.</li>
+        <li>Rows are training examples, columns are features — always, and every indexing bug in this project traced back to forgetting that.</li>
+        <li><code>m</code> is the number of examples; <code>n</code> is the number of features. They are different numbers and get used in different places.</li>
+        <li>The parameter update is always <span>\(\theta \leftarrow \theta - \alpha \nabla J\)</span> — element-wise, using <code>*</code>, never <code>@</code>.</li>
+        <li>A decreasing loss curve is the first and most important sanity check that gradient descent is actually working.</li>
+        <li>Numerical symptoms like <code>log(0)</code> are usually messages about a deeper problem — bad feature scaling or an unstable learning rate — not just a clipping exercise.</li>
+      </ol>
+
+      <footer>logistic regression — lab notebook · built to be re-read, not re-memorized</footer>
+    </div>
+  </main>
+</div>
+
+<button id="top-btn" aria-label="Back to top">↑</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ---- KaTeX render ----
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\[", right: "\\]", display: true}
+    ],
+    throwOnError: false
+  });
+
+  // ---- highlight.js ----
+  document.querySelectorAll('pre code').forEach(function (el) {
+    hljs.highlightElement(el);
+  });
+
+  // ---- progress bar ----
+  var progress = document.getElementById('progress');
+  function updateProgress() {
+    var h = document.documentElement;
+    var scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = (scrolled || 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ---- back to top ----
+  var topBtn = document.getElementById('top-btn');
+  document.addEventListener('scroll', function () {
+    topBtn.style.display = window.scrollY > 500 ? 'flex' : 'none';
+  }, { passive: true });
+  topBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---- scrollspy for TOC ----
+  var sections = Array.from(document.querySelectorAll('main h2.section-title'));
+  var tocLinks = Array.from(document.querySelectorAll('.toc a'));
+  function onScrollSpy() {
+    var pos = window.scrollY + 120;
+    var current = sections[0];
+    sections.forEach(function (s) {
+      if (s.offsetTop <= pos) current = s;
+    });
+    tocLinks.forEach(function (a) {
+      a.classList.toggle('active', current && a.getAttribute('href') === '#' + current.id);
+    });
+  }
+  document.addEventListener('scroll', onScrollSpy, { passive: true });
+  onScrollSpy();
+
+  // ---- sigmoid widget ----
+  var svgNS = "http://www.w3.org/2000/svg";
+  var curve = document.getElementById('sigCurve');
+  var dot = document.getElementById('sigDot');
+  var slider = document.getElementById('zSlider');
+  var zValEl = document.getElementById('zVal');
+  var pValEl = document.getElementById('pVal');
+
+  // plot area: x from 30..360 maps z -10..10 ; y from 190..20 maps p 0..1
+  function zToX(z){ return 30 + (z + 10) / 20 * 330; }
+  function pToY(p){ return 190 - p * 170; }
+  function sigmoid(z){ return 1 / (1 + Math.exp(-z)); }
+
+  var d = "";
+  for (var z = -10; z <= 10.001; z += 0.2) {
+    var x = zToX(z);
+    var y = pToY(sigmoid(z));
+    d += (z <= -10 ? "M" : "L") + x.toFixed(2) + "," + y.toFixed(2) + " ";
+  }
+  curve.setAttribute('d', d);
+
+  function updateSig(z) {
+    z = Math.max(-10, Math.min(10, z));
+    var p = sigmoid(z);
+    dot.setAttribute('cx', zToX(z).toFixed(2));
+    dot.setAttribute('cy', pToY(p).toFixed(2));
+    zValEl.textContent = z.toFixed(2);
+    pValEl.textContent = p.toFixed(3);
+    slider.value = z;
+  }
+  slider.addEventListener('input', function () { updateSig(parseFloat(slider.value)); });
+  document.querySelectorAll('[data-z]').forEach(function (btn) {
+    btn.addEventListener('click', function () { updateSig(parseFloat(btn.getAttribute('data-z'))); });
+  });
+  updateSig(0);
+
+  // ---- matrix widget ----
+  var matReadout = document.getElementById('matReadout');
+  var matCells = document.querySelectorAll('#matTable td');
+  function clearMat() {
+    matCells.forEach(function (c) { c.classList.remove('hl-row', 'hl-col', 'hl-both'); });
+  }
+  document.querySelectorAll('[data-row]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      clearMat();
+      var r = btn.getAttribute('data-row');
+      matCells.forEach(function (c) { if (c.getAttribute('data-r') === r) c.classList.add('hl-row'); });
+      matReadout.textContent = 'data[' + r + '] → one training example (a row): age and income for that person.';
+    });
+  });
+  document.querySelectorAll('[data-col]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      clearMat();
+      var c0 = btn.getAttribute('data-col');
+      matCells.forEach(function (c) { if (c.getAttribute('data-c') === c0) c.classList.add('hl-col'); });
+      var label = c0 === '0' ? 'age' : 'income';
+      matReadout.textContent = 'data[:, ' + c0 + '] → one feature (' + label + ') across every example (a column).';
+    });
+  });
+  document.getElementById('matClear').addEventListener('click', function () {
+    clearMat();
+    matReadout.textContent = 'Nothing selected — every cell belongs to exactly one row (an example) and one column (a feature).';
+  });
+
+  // ---- loop vs vectorized tabs ----
+  var tabLoop = document.getElementById('tabLoop');
+  var tabVec = document.getElementById('tabVec');
+  var paneLoop = document.getElementById('paneLoop');
+  var paneVec = document.getElementById('paneVec');
+  tabLoop.addEventListener('click', function () {
+    tabLoop.classList.add('active'); tabVec.classList.remove('active');
+    paneLoop.classList.add('active'); paneVec.classList.remove('active');
+  });
+  tabVec.addEventListener('click', function () {
+    tabVec.classList.add('active'); tabLoop.classList.remove('active');
+    paneVec.classList.add('active'); paneLoop.classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

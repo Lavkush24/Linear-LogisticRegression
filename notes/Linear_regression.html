@@ -1,0 +1,3014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tower to Regression — A Learning Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1928;
+  --bg2:#0d2036;
+  --panel:#112943;
+  --panel2:#15304e;
+  --border:#25476b;
+  --border-soft:#1c3854;
+  --ink:#eef3f8;
+  --ink-dim:#9db3cb;
+  --ink-faint:#6d8399;
+  --copper:#e8a33d;
+  --copper-bright:#ffc26b;
+  --copper-dim:#a97328;
+  --teal:#5fd0c0;
+  --teal-dim:#3a8f83;
+  --red:#e2665a;
+  --red-dim:#8a3a33;
+  --green:#7ed08a;
+  --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sans:'IBM Plex Sans', ui-sans-serif, -apple-system, sans-serif;
+  --display:'Space Grotesk', var(--sans);
+  --grid-line: rgba(180,205,230,0.05);
+  --maxw: 880px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/38px 38px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/38px 38px,
+    var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--copper-dim); color:#fff;}
+
+h1,h2,h3,h4{font-family:var(--display); font-weight:600; letter-spacing:-0.01em; color:var(--ink);}
+a{color:var(--copper-bright);}
+code, .mono{font-family:var(--mono);}
+
+/* ---------- Layout shell ---------- */
+.shell{display:flex; min-height:100vh;}
+
+.sidebar{
+  width:272px; flex:none;
+  position:sticky; top:0; align-self:flex-start;
+  height:100vh; overflow-y:auto;
+  background:linear-gradient(180deg, var(--bg2), var(--bg));
+  border-right:1px solid var(--border-soft);
+  padding:22px 16px 40px;
+  z-index:40;
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+
+.brand{
+  display:flex; align-items:center; gap:10px;
+  padding:2px 8px 18px;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:14px;
+}
+.brand .bolt{
+  width:26px;height:26px; flex:none;
+  color:var(--copper);
+}
+.brand-text{font-family:var(--display); font-size:14px; line-height:1.25; color:var(--ink);}
+.brand-text small{display:block; color:var(--ink-faint); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono);}
+
+.navlabel{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-faint); padding:14px 8px 6px;
+}
+.navlist{list-style:none; margin:0; padding:0;}
+.navlist li{margin:0;}
+.navlist a{
+  display:flex; gap:10px; align-items:baseline;
+  text-decoration:none; color:var(--ink-dim);
+  font-size:13.5px; padding:7px 8px; border-radius:6px;
+  border-left:2px solid transparent;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.navlist a .n{font-family:var(--mono); font-size:11px; color:var(--ink-faint); flex:none; width:20px;}
+.navlist a:hover{background:var(--panel); color:var(--ink);}
+.navlist a.active{background:var(--panel2); color:var(--copper-bright); border-left-color:var(--copper);}
+.navlist a.active .n{color:var(--copper-bright);}
+
+.sidebar-toggle{
+  display:none; position:fixed; top:14px; left:14px; z-index:60;
+  background:var(--panel2); border:1px solid var(--border); color:var(--ink);
+  width:40px; height:40px; border-radius:8px; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+
+main{flex:1; min-width:0;}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:56px 6vw 40px;
+  border-bottom:1px solid var(--border-soft);
+  position:relative;
+  overflow:hidden;
+}
+.hero-kicker{
+  font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--copper); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.hero-kicker::before{content:''; width:22px; height:1px; background:var(--copper-dim);}
+.hero h1{
+  font-size:clamp(30px, 4.4vw, 52px); line-height:1.06; margin:0 0 18px; max-width:16ch;
+}
+.hero h1 em{font-style:normal; color:var(--copper-bright);}
+.hero p.lede{
+  font-size:17px; color:var(--ink-dim); max-width:62ch; margin:0 0 30px;
+}
+.hero-grid{
+  display:grid; grid-template-columns: minmax(0,1.05fr) minmax(280px,0.95fr); gap:34px; align-items:start;
+}
+@media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+
+.central-q{
+  font-family:var(--display); font-size:15px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--copper);
+  padding:14px 16px; border-radius:8px; margin-top:6px;
+}
+.central-q b{color:var(--copper-bright); font-weight:600;}
+
+/* ---------- Roadmap chain ---------- */
+.roadmap{
+  padding:26px 6vw 34px;
+  border-bottom:1px solid var(--border-soft);
+  background:var(--bg2);
+}
+.roadmap h2{font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint); font-family:var(--mono); font-weight:500; margin:0 0 16px;}
+.chain{display:flex; flex-wrap:wrap; gap:0; align-items:center;}
+.chain .node{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.03em;
+  color:var(--ink-dim); background:var(--panel); border:1px solid var(--border);
+  padding:7px 12px; border-radius:20px; text-decoration:none;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.chain .node:hover{border-color:var(--copper); color:var(--copper-bright); background:var(--panel2);}
+.chain .arrow{color:var(--border); margin:0 6px; font-size:13px;}
+
+/* ---------- Content ---------- */
+.content{max-width:var(--maxw); margin:0 auto; padding:0 6vw 10px;}
+
+section.stage{
+  padding:64px 0 40px;
+  border-bottom:1px solid var(--border-soft);
+  scroll-margin-top: 20px;
+}
+section.stage:last-of-type{border-bottom:none;}
+
+.stage-eyebrow{
+  font-family:var(--mono); font-size:12px; color:var(--copper); letter-spacing:.1em; text-transform:uppercase;
+  display:flex; align-items:center; gap:10px; margin-bottom:10px;
+}
+.stage-eyebrow .num{
+  width:30px; height:30px; border-radius:50%; border:1px solid var(--copper-dim);
+  display:flex; align-items:center; justify-content:center; color:var(--copper-bright); font-size:13px;
+  background:var(--panel);
+}
+.stage h2.title{font-size:clamp(22px,3vw,30px); margin:0 0 6px;}
+.stage .subtitle{color:var(--ink-dim); font-size:15px; margin:0 0 28px; max-width:60ch;}
+
+.stage h4{
+  font-size:12.5px; text-transform:uppercase; letter-spacing:.09em; color:var(--teal);
+  font-family:var(--mono); font-weight:500;
+  margin:30px 0 10px; display:flex; align-items:center; gap:8px;
+}
+.stage h4::before{content:''; width:14px; height:1px; background:var(--teal-dim);}
+.stage h4.mistake{color:var(--red);}
+.stage h4.mistake::before{background:var(--red-dim);}
+.stage h4.learned{color:var(--copper-bright);}
+.stage h4.learned::before{background:var(--copper-dim);}
+
+.stage p{color:#d7e2ee; margin:0 0 14px;}
+.stage ul, .stage ol{color:#d7e2ee; padding-left:22px; margin:0 0 14px;}
+.stage li{margin-bottom:6px;}
+.stage strong{color:var(--ink); font-weight:600;}
+
+.formula{
+  font-family:var(--mono); background:var(--panel); border:1px solid var(--border-soft);
+  border-radius:8px; padding:14px 18px; margin:14px 0; overflow-x:auto;
+  font-size:14.5px; color:var(--teal);
+}
+.formula .lbl{display:block; font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; font-family:var(--mono);}
+
+pre.code{
+  background:#081422; border:1px solid var(--border-soft); border-radius:8px;
+  padding:16px 18px; overflow-x:auto; font-family:var(--mono); font-size:13px; line-height:1.65;
+  color:#c9d9e8; margin:14px 0;
+}
+pre.code .c{color:var(--ink-faint); font-style:italic;} /* comment */
+pre.code .k{color:var(--teal);} /* keyword-ish highlight */
+pre.code .s{color:var(--copper-bright);} /* highlight/string */
+pre.code .bug{background:rgba(226,102,90,0.14); display:inline-block; width:100%; border-left:2px solid var(--red);}
+.code-label{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; margin:14px 0 -6px;}
+
+.callout{
+  border:1px solid var(--border); border-left:3px solid var(--teal);
+  background:var(--panel); border-radius:8px; padding:14px 16px; margin:16px 0;
+}
+.callout.mistake{border-left-color:var(--red); background:rgba(226,102,90,0.06);}
+.callout.mistake .tag{color:var(--red);}
+.callout.fixed{border-left-color:var(--green); background:rgba(126,208,138,0.06);}
+.callout.fixed .tag{color:var(--green);}
+.callout.inconsistency{border-left-color:var(--copper); background:rgba(232,163,61,0.06);}
+.callout.inconsistency .tag{color:var(--copper-bright);}
+.callout .tag{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:6px;}
+
+.output-block{
+  font-family:var(--mono); font-size:12.5px; background:#050d17; border:1px solid var(--border-soft);
+  border-radius:8px; padding:12px 16px; color:#8fb6a8; margin:10px 0; overflow-x:auto; white-space:pre;
+}
+
+/* Learned box */
+.learned-box{
+  margin-top:36px; border:1px solid var(--border); border-radius:10px; overflow:hidden;
+  background:linear-gradient(180deg, var(--panel), var(--bg2));
+}
+.learned-box .lb-head{
+  padding:12px 18px; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--copper-bright); border-bottom:1px solid var(--border-soft); background:rgba(232,163,61,0.06);
+}
+.learned-grid{display:grid; grid-template-columns:1fr 1fr; gap:0;}
+@media (max-width:700px){.learned-grid{grid-template-columns:1fr;}}
+.learned-cell{padding:16px 18px; border-right:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);}
+.learned-cell:nth-child(2n){border-right:none;}
+.learned-cell h5{margin:0 0 8px; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint);}
+.learned-cell p, .learned-cell ul{font-size:14px; margin:0; color:#c7d5e3;}
+.learned-cell ul{padding-left:18px;}
+.derive-test{background:rgba(95,208,192,0.06);}
+.derive-test h5{color:var(--teal);}
+
+/* Active recall */
+.recall{margin-top:20px;}
+.recall > .rc-label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-faint); margin-bottom:10px; display:block;}
+details.qa{
+  border:1px solid var(--border-soft); border-radius:8px; margin-bottom:8px; background:var(--panel);
+  overflow:hidden;
+}
+details.qa summary{
+  padding:12px 16px; cursor:pointer; list-style:none; font-size:14.5px; color:var(--ink);
+  display:flex; gap:10px; align-items:flex-start;
+}
+details.qa summary::-webkit-details-marker{display:none;}
+details.qa summary::before{content:'?'; font-family:var(--mono); color:var(--teal); flex:none; font-weight:600;}
+details.qa[open] summary{border-bottom:1px solid var(--border-soft); background:var(--panel2);}
+details.qa[open] summary::before{content:'↓'; color:var(--copper-bright);}
+details.qa .qa-answer{padding:12px 16px 16px 34px; font-size:13.8px; color:#c7d5e3;}
+
+/* Widgets */
+.widget{
+  margin:22px 0; border:1px solid var(--border); border-radius:12px; overflow:hidden;
+  background:linear-gradient(180deg, var(--panel2), var(--panel));
+}
+.widget-head{
+  padding:12px 18px; border-bottom:1px solid var(--border-soft);
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+.widget-head .wt{font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--teal);}
+.widget-body{padding:16px 18px 20px;}
+.widget canvas{width:100%; display:block; background:#081422; border-radius:8px; border:1px solid var(--border-soft); touch-action:none;}
+.controls{display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; align-items:flex-end;}
+.ctrl{display:flex; flex-direction:column; gap:4px; min-width:120px;}
+.ctrl label{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint);}
+.ctrl .val{color:var(--copper-bright); font-family:var(--mono);}
+.ctrl input[type=range]{width:100%; accent-color:var(--copper);}
+.ctrl select, .ctrl input[type=number]{
+  background:var(--panel); border:1px solid var(--border); color:var(--ink); border-radius:6px; padding:6px 8px; font-family:var(--mono); font-size:12.5px;
+}
+.btn{
+  background:var(--copper-dim); color:#1a1305; border:none; border-radius:6px; padding:8px 16px;
+  font-family:var(--mono); font-size:12.5px; text-transform:uppercase; letter-spacing:.05em; cursor:pointer;
+  transition:background .15s;
+}
+.btn:hover{background:var(--copper);}
+.btn.secondary{background:transparent; border:1px solid var(--border); color:var(--ink-dim);}
+.btn.secondary:hover{border-color:var(--teal); color:var(--teal);}
+.readout{font-family:var(--mono); font-size:12.5px; color:var(--ink-dim); margin-top:10px;}
+.readout b{color:var(--copper-bright);}
+.readout .teal{color:var(--teal);}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-top:8px;}
+.legend span{display:inline-flex; align-items:center; gap:6px;}
+.legend i{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+/* dimension explorer specific */
+.matrix-vis{display:flex; align-items:center; gap:18px; flex-wrap:wrap; font-family:var(--mono); font-size:12.5px;}
+.matbox{border:1px solid var(--border); border-radius:6px; padding:10px 14px; background:var(--panel); text-align:center;}
+.matbox .dims{color:var(--copper-bright); font-size:15px;}
+.matbox .name{color:var(--ink-faint); font-size:10.5px; text-transform:uppercase; margin-top:4px;}
+
+footer.endnote{
+  padding:40px 6vw 70px; color:var(--ink-faint); font-size:13px; text-align:center; font-family:var(--mono);
+}
+
+@media (max-width:960px){
+  .sidebar{position:fixed; left:0; top:0; transform:translateX(-100%); transition:transform .2s; box-shadow:0 0 40px rgba(0,0,0,.5);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-toggle{display:flex;}
+  .hero, .roadmap{padding-left:20px; padding-right:20px;}
+  .content{padding-left:20px; padding-right:20px;}
+}
+</style>
+</head>
+
+<body>
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">☰</button>
+
+<div class="shell">
+<nav class="sidebar" id="sidebar">
+  <div class="brand">
+    <svg class="bolt" viewBox="0 0 24 24" fill="none"><path d="M4 21L14 3L11 10H20L10 21L13 14H4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <div class="brand-text">Tower → Regression<small>a learning map</small></div>
+  </div>
+
+  <div class="navlabel">The journey</div>
+  <ul class="navlist">
+    <li><a href="#stage0"><span class="n">00</span>The original problem</a></li>
+    <li><a href="#stage1"><span class="n">01</span>Points to a line</a></li>
+    <li><a href="#stage2"><span class="n">02</span>Measuring badness</a></li>
+    <li><a href="#stage3"><span class="n">03</span>The cost surface</a></li>
+    <li><a href="#stage4"><span class="n">04</span>Derivatives</a></li>
+    <li><a href="#stage5"><span class="n">05</span>Gradient descent</a></li>
+    <li><a href="#stage6"><span class="n">06</span>Visualizing it</a></li>
+    <li><a href="#stage7"><span class="n">07</span>Symbolic → numeric</a></li>
+    <li><a href="#stage8"><span class="n">08</span>Newton's method</a></li>
+    <li><a href="#stage9"><span class="n">09</span>One → many features</a></li>
+    <li><a href="#stage10"><span class="n">10</span>Vectorization</a></li>
+    <li><a href="#stage11"><span class="n">11</span>Generalized regression</a></li>
+    <li><a href="#stage12"><span class="n">12</span>Testing it</a></li>
+    <li><a href="#stage13"><span class="n">13</span>Why it got slow</a></li>
+    <li><a href="#stage14"><span class="n">14</span>The bigger picture</a></li>
+    <li><a href="#stage15"><span class="n">15</span>Mental model</a></li>
+  </ul>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="hero-kicker">Reconstructed from 5 of my own notebooks</div>
+  <h1>How did I get from <em>towers on a coordinate plane</em> to writing my own regression + optimization engine?</h1>
+  <p class="lede">
+    This isn't a textbook chapter. It's a reconstruction of my own reasoning — including the parts where I guessed wrong,
+    named a function badly, summed a gradient array instead of a gradient, or let a NumPy array mutate underneath me.
+    Every stage below answers one question: <em>why did I need this concept at exactly this point, and not before?</em>
+  </p>
+
+  <div class="hero-grid">
+    <div>
+      <div class="central-q">
+        The question every stage answers a piece of: <b>"I had towers with coordinates and no idea how to relate them —
+        how did that turn into a general parameter-optimization system I built myself?"</b>
+      </div>
+      <p style="margin-top:16px; font-size:14px; color:var(--ink-faint);">
+        Drag the line below. This is literally the object at the center of the entire journey: five power-grid towers,
+        one straight line, and the question of how to make the line "fit" — which is where Stage 1 begins.
+      </p>
+    </div>
+    <div class="widget" style="margin:0;">
+      <div class="widget-head"><span class="wt">Live · the actual tower data</span><span class="wt" style="color:var(--ink-faint)">tx=[2,4,6,8,9] ty=[3,6,8,2,5]</span></div>
+      <div class="widget-body">
+        <canvas id="heroCanvas" width="560" height="360"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label>m (slope) <span class="val" id="heroMVal">0.30</span></label><input type="range" id="heroM" min="-3" max="3" step="0.01" value="0.30"></div>
+          <div class="ctrl"><label>b (intercept) <span class="val" id="heroBVal">3.00</span></label><input type="range" id="heroB" min="-5" max="12" step="0.01" value="3.00"></div>
+          <button class="btn secondary" id="heroBest">Snap to best fit</button>
+        </div>
+        <div class="readout">Total squared error (cost): <b id="heroCost">–</b></div>
+        <div class="legend">
+          <span><i style="background:var(--copper)"></i>tower</span>
+          <span><i style="background:var(--teal)"></i>my line</span>
+          <span><i style="background:var(--red)"></i>residual (error)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="roadmap">
+  <h2>Visual roadmap — click any node to jump there</h2>
+  <div class="chain">
+    <a class="node" href="#stage0">PROBLEM</a><span class="arrow">→</span>
+    <a class="node" href="#stage1">GEOMETRY</a><span class="arrow">→</span>
+    <a class="node" href="#stage1">MODEL</a><span class="arrow">→</span>
+    <a class="node" href="#stage2">ERROR</a><span class="arrow">→</span>
+    <a class="node" href="#stage2">COST</a><span class="arrow">→</span>
+    <a class="node" href="#stage3">OPTIMIZATION</a><span class="arrow">→</span>
+    <a class="node" href="#stage4">DERIVATIVE</a><span class="arrow">→</span>
+    <a class="node" href="#stage5">GRADIENT DESCENT</a><span class="arrow">→</span>
+    <a class="node" href="#stage6">VISUALIZATION</a><span class="arrow">→</span>
+    <a class="node" href="#stage8">NEWTON / HESSIAN</a><span class="arrow">→</span>
+    <a class="node" href="#stage9">MULTIPLE FEATURES</a><span class="arrow">→</span>
+    <a class="node" href="#stage10">VECTORIZATION</a><span class="arrow">→</span>
+    <a class="node" href="#stage11">GENERALIZED REGRESSION</a><span class="arrow">→</span>
+    <a class="node" href="#stage13">LIMITATIONS</a><span class="arrow">→</span>
+    <a class="node" href="#stage15">NEXT CONCEPTS</a>
+  </div>
+</section>
+
+<div class="content">
+<section class="stage" id="stage0">
+  <div class="stage-eyebrow"><span class="num">0</span>Stage 0 — The original problem</div>
+  <h2 class="title">Towers, a house, and a cost nobody had defined yet</h2>
+  <p class="subtitle">Before any math, there was a plain-language problem. I wrote it down first, in my own words, before I knew what tool I'd need to solve it.</p>
+
+  <h4>The problem, in my own words</h4>
+  <p>The first cell of <code>regression_one_tower_problem.ipynb</code> is not code — it's a docstring where I stated the problem before touching NumPy:</p>
+  <div class="output-block">PROBLEM STATEMENT :
+    there are n number of the power grid towers that supply electricity to the a house
+    so we need to find the position of the house such that it required minimum cost to connect each tower.
+
+    calculation of cost = square of distance between tower and the house.</div>
+  <p>So the original question was about <strong>one unknown point</strong> — the house — and <strong>n known points</strong> — the towers.
+  The "cost" of a candidate house location was the sum of squared distances from that single point to every tower.
+  This is a facility-location problem: where do I place one point so that, on average (in a squared sense), it's as close as possible to a set of fixed points?</p>
+
+  <h4>What information was available, what was unknown</h4>
+  <ul>
+    <li><strong>Known:</strong> the coordinates of every tower — an x and a y value each.</li>
+    <li><strong>Unknown:</strong> a location that minimizes total squared distance to all of them.</li>
+    <li><strong>Assumed:</strong> that "cost" could be captured entirely by geometric distance, squared.</li>
+  </ul>
+
+  <h4>Why I needed a mathematical model at all</h4>
+  <p>I couldn't just "look" at five towers scattered on a plane and guess the best point — with more than two towers there's no single obvious answer,
+  and "best" only means something once cost is a number I can compare across candidate locations. That's the whole reason a <strong>cost function</strong>
+  enters the picture at Stage 0, before any regression vocabulary shows up: I needed a way to turn "is this a good location?" into "how small is this number?"</p>
+
+  <h4>The coordinate interpretation</h4>
+  <p>Every tower became a pair <code>(x, y)</code>. That single move — turning a physical tower into a coordinate pair — is what makes the rest of the
+  journey possible. Once towers are points in a plane, any relationship I hypothesize between them (a line, a curve, a location) becomes a question
+  I can answer with algebra instead of intuition.</p>
+
+  <div class="callout inconsistency">
+    <span class="tag">Where the notebook actually pivots</span>
+    <p style="margin:0;">Here's something I noticed re-reading my own notebook: the docstring describes finding <strong>one house point</strong> that minimizes
+    squared distance to <strong>n towers</strong> — a facility-location problem. But the very next cells never build that. Instead, cell 3 defines
+    <code>fxy(m,b,a1,b1) = m*a1 + b - b1</code> and cell 5 defines <code>cost(tx,ty,m,b) = Σ (m·tx[i] + b − ty[i])²</code> — which is <strong>not</strong>
+    distance from a point to a set of towers. It's the vertical residual between a <em>line</em> and a set of tower coordinates: ordinary line-fitting.
+    I never explicitly reconciled this shift in the notebook. My best reconstruction of what happened: I started by imagining "one house, many towers,"
+    but the moment I sat down to write code, the thing I actually knew how to formalize was "fit a line through points" — so the problem quietly turned
+    into linear regression, using the towers' own coordinates as the data points to fit. I'm preserving this exactly as it happened rather than
+    pretending the docstring and the code always agreed, because this pivot is itself the real origin of "why regression" in this journey.</p>
+  </div>
+
+  <h4>How the idea of a line arose</h4>
+  <p>Once the towers are treated as <code>(x, y)</code> points that I want to relate to each other, the simplest possible relationship I can hypothesize
+  is a straight line: <code>y = mx + b</code>. It has exactly two unknowns, it's easy to differentiate, and if it fits the towers reasonably well I can use
+  it to reason about the whole configuration — including, eventually, a "best" point along it. This is the geometric idea that Stage 1 formalizes.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 0</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Why a vague real-world problem needs to be translated into coordinates before any optimization is possible.</li>
+          <li>The difference between a facility-location cost (distance to a point) and a curve-fitting cost (residual to a line).</li>
+          <li>Why "cost" has to be a number before "best" means anything.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>My own problem statement and my own code didn't describe the same problem, and I didn't notice for a while. I was solving line-fitting
+        while still narrating it to myself as "finding the house."</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Re-reading the notebook months later, side by side. The resolution isn't "which one was right" — it's realizing both are valid problems,
+        and I'd unconsciously substituted the one I had tools for. That substitution is normal and worth catching, not hiding.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Given tower coordinates (x₁,y₁)…(xₙ,yₙ), write the squared-distance-to-a-point cost for an unknown house at (h,k), and separately the
+        squared-residual-to-a-line cost for an unknown line y=mx+b. Confirm they involve different unknowns (2 numbers vs. 2 numbers, but geometrically
+        different objects) and different distance directions (full Euclidean vs. vertical-only).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why can't "best house location" be answered by inspection once there are more than 2 towers?</summary>
+      <div class="qa-answer">With 2 towers, the best point (minimizing summed squared distance) is just the midpoint — easy to see. With 3+ towers scattered
+      irregularly, there's no point that's simultaneously closest to all of them, so "best" has to be defined numerically (as the minimizer of a
+      cost function) rather than read off a picture.</div>
+    </details>
+    <details class="qa"><summary>What's the actual mathematical difference between "distance from a point to a tower" and "residual of a line at a tower's x-coordinate"?</summary>
+      <div class="qa-answer">Point-to-point distance is the full Euclidean distance, √((x−h)²+(y−k)²), independent of any direction. A line's residual at a tower
+      is only the vertical gap, (m·x + b) − y — it ignores horizontal distance entirely. They coincide only in special cases (e.g. vertical lines don't
+      even exist in y=mx+b form). This is why "line-fitting" and "closest point" are genuinely different problems, even though both start from the same
+      tower coordinates.</div>
+    </details>
+    <details class="qa"><summary>Why does turning towers into (x, y) coordinates matter so much?</summary>
+      <div class="qa-answer">It converts a physical, spatial question into an algebraic one. Once towers are numbers, any hypothesis about how they relate
+      (linear, quadratic, multi-feature) can be tested and optimized with calculus and linear algebra instead of geometric intuition alone.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: once towers are coordinates, what's the simplest relationship I can propose between them?</p>
+</section>
+<section class="stage" id="stage1">
+  <div class="stage-eyebrow"><span class="num">1</span>Stage 1 — From points to a line</div>
+  <h2 class="title">Representing towers as data, and proposing y = mx + b</h2>
+  <p class="subtitle">What I knew before this stage: towers have coordinates. What I didn't know yet: how to write "a line through them" in code.</p>
+
+  <h4>Representing the tower coordinates</h4>
+  <p>Across the notebooks the same small dataset keeps reappearing — five towers used again and again as the canonical test case, first in
+  <code>regression_multi_tower_problem.ipynb</code> and then reused in <code>optimization_using_newton_method.ipynb</code>:</p>
+  <div class="code-label">regression_multi_tower_problem.ipynb</div>
+  <pre class="code">tx = [2,4,6,8,9]
+ty = [3,6,8,2,5]</pre>
+  <p><code>tx</code> holds the x-coordinate of each tower, <code>ty</code> the y-coordinate. Tower <code>i</code> is the point <code>(tx[i], ty[i])</code>.
+  This is the same 5-point dataset driving the hero widget at the top of this page.</p>
+
+  <h4>Understanding x and y</h4>
+  <p>It's worth being precise about what x and y even are here, because the notebooks never fully pin this down (a good example of a real gap between
+  "problem statement" and "implementation" — see Stage 0). Whatever x and y represent physically, mathematically I only need two things from them:
+  a value I treat as input (<code>x</code>) and a value I'm trying to relate it to (<code>y</code>).</p>
+
+  <h4>The model: y = mx + b</h4>
+  <div class="formula"><span class="lbl">Model / hypothesis</span>ŷ = m·x + b</div>
+  <p>This is a hypothesis, not a fact: I'm proposing that <code>y</code> can be approximated as a linear function of <code>x</code>. Two unknowns fully
+  describe this hypothesis:</p>
+  <ul>
+    <li><strong>m</strong> — the slope. Geometrically, how much ŷ changes per unit of x. In the tower context, it's the rate at which the y-coordinate
+    trends upward or downward as x increases across towers.</li>
+    <li><strong>b</strong> — the intercept. Where the line crosses x = 0. It's the baseline value of ŷ before x has any effect.</li>
+  </ul>
+  <p>I named the residual function <code>fxy</code> in <code>regression_one_tower_problem.ipynb</code>, even though it isn't really "a function of x and y" —
+  it's a function of m, b, and one point:</p>
+  <div class="code-label">regression_one_tower_problem.ipynb — cell 3</div>
+  <pre class="code"><span class="c"># function for calculating a single value f(x,y)</span>
+<span class="c"># for two variable for a point in place (a1,b1) cost function c(m,b) = (m·a1 + b - b1)**2</span>
+
+def fxy(m,b,a1,b1):
+    return m*a1 + b - b1</pre>
+  <p>This naming is worth keeping rather than "fixing," because it captures exactly where my head was at this point: I was still thinking of this as
+  "a function involving x and y," even though what it actually computes — <code>m·a1 + b − b1</code> — is the <strong>residual</strong>: how far the
+  line's prediction at <code>a1</code> is from the true value <code>b1</code>. Naming it after its inputs rather than what it means is a very natural
+  first-pass mistake, and it's the seed of the vocabulary I properly separate out in Stage 2 (error vs. residual vs. squared error vs. cost).</p>
+
+  <h4>What happens when the line doesn't pass through the points</h4>
+  <p>Almost always, it doesn't — and it can't, in general, pass through all five towers exactly, because five points impose five constraints on a line
+  that only has two degrees of freedom (m and b). For most datasets a line has to <em>miss</em> some or all of the points. Drag <b>m</b> and <b>b</b> in
+  the hero widget above and watch: for any choice, some towers sit above the line and some below. Those vertical gaps are exactly what Stage 2 needs
+  to measure.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 1</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Representing a set of points as two parallel arrays, <code>tx</code> and <code>ty</code>.</li>
+          <li>y = mx + b as a hypothesis with exactly two free parameters.</li>
+          <li>m as rate-of-change, b as the y = 0 baseline.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>I called a residual function <code>fxy</code> as if it were a function of x and y, when it's really a function of the parameters and one
+        data point. The name reflected my mental model at the time, not the actual math.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Once I needed to sum this quantity over many points and differentiate it with respect to m and b (Stage 2–4), it became unavoidable to think
+        of it as "error, as a function of the parameters," not "a function of x and y." The variable I differentiate with respect to defines what the
+        function "really" depends on.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For the line y = 2x + 1 and the tower at (4, 6): what is the predicted ŷ? What is the residual (prediction − actual)? Is the tower above or
+        below the line?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why does y = mx + b only need two numbers to be fully specified?</summary>
+      <div class="qa-answer">Because a straight line in 2D has exactly two degrees of freedom: its steepness and its vertical position. Any other line
+      parameter (e.g. a specific point it passes through) can be derived from m and b, so no more than two numbers are needed, and no fewer will do.</div>
+    </details>
+    <details class="qa"><summary>Why can't a single line generally pass through 5 arbitrary points?</summary>
+      <div class="qa-answer">A line has 2 degrees of freedom (m, b); passing exactly through 5 points is 5 independent constraints. Unless the points
+      happen to be exactly collinear, 5 constraints on 2 unknowns is over-determined — there's no solution that satisfies all of them simultaneously.</div>
+    </details>
+    <details class="qa"><summary>What's the difference between calling something a "function of x and y" versus "a function of the parameters"?</summary>
+      <div class="qa-answer">It's about which symbols are treated as variable and which are fixed. When x, y are one specific known tower coordinate,
+      and m, b are what you're solving for, the expression is really a function of m and b — x, y are just constants plugged in for that one point.
+      This distinction becomes essential the moment you differentiate, because you only differentiate with respect to the true variables.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: the line almost never fits perfectly. How do I turn "how far off" into a single number I can minimize?</p>
+</section>
+<section class="stage" id="stage2">
+  <div class="stage-eyebrow"><span class="num">2</span>Stage 2 — How do we measure "badness"?</div>
+  <h2 class="title">Error, residual, squared error, and total cost are four different things</h2>
+  <p class="subtitle">What I knew before this stage: a line usually misses the towers. What I didn't know: how to turn "misses" into one number to minimize.</p>
+
+  <h4>Why a line needs an objective at all</h4>
+  <p>"This line looks pretty good" isn't something an algorithm can act on. I needed a single number that gets smaller as the line gets better and
+  bigger as it gets worse, so that "improving the line" becomes "decreasing a number" — a problem calculus and search algorithms actually know how to
+  solve.</p>
+
+  <h4>Four words I was using loosely, made precise</h4>
+  <ul>
+    <li><strong>Geometric distance / error for a point:</strong> in the facility-location framing from Stage 0, this would be the full Euclidean
+    distance from a candidate point to a tower, √((x−h)² + (y−k)²). This is <em>not</em> what my code ends up computing.</li>
+    <li><strong>Residual:</strong> what my code actually computes — the signed vertical gap between the line's prediction and the true value at one
+    tower's x-position: <code>m·tx[i] + b − ty[i]</code>. This is exactly what <code>fxy</code> returns in Stage 1. It can be positive (line too high)
+    or negative (line too low).</li>
+    <li><strong>Squared error:</strong> the residual, squared: <code>(m·tx[i] + b − ty[i])²</code>. Always non-negative — one tower's individual
+    contribution to "badness."</li>
+    <li><strong>Total cost:</strong> the sum of squared errors over every tower — one number describing how bad the whole line is, for the whole
+    dataset, for one specific (m, b).</li>
+  </ul>
+  <div class="callout">
+    <span class="tag">Preserving the Stage 0 gap</span>
+    <p style="margin:0;">This is the same place where the "distance to a point" framing from the original problem statement and the "residual of a line"
+    framing in the code diverge concretely. A full Euclidean distance would also penalize horizontal offset; a vertical residual doesn't care about
+    horizontal position at all. My code always used the residual definition, everywhere, from the very first cost function onward.</p>
+  </div>
+
+  <h4>The cost function, exactly as I wrote it</h4>
+  <div class="code-label">regression_one_tower_problem.ipynb — cell 5</div>
+  <pre class="code"><span class="c"># cost function</span>
+
+def cost(tx,ty,m,b):
+    c = 0
+    for i in range(0,np.size(tx)):
+        c += (m*tx[i] + b - ty[i])**2
+
+    return c</pre>
+  <div class="formula"><span class="lbl">Same thing, in math notation</span>C(m,b) = Σᵢ (m·xᵢ + b − yᵢ)²</div>
+  <p>Notice the loop: this sums one squared error per tower into a running total <code>c</code>. That loop is going to matter a lot later — Stage 10
+  is entirely about replacing it with a vectorized NumPy expression.</p>
+
+  <h4>Why the cost becomes a function of m and b, not of x and y</h4>
+  <p>Once <code>tx</code> and <code>ty</code> are fixed (they're the towers — they don't change), the only things left free to vary are <code>m</code>
+  and <code>b</code>. So <code>C</code> is a function <em>of the parameters</em>, evaluated using the fixed data. This is the same shift in perspective
+  from Stage 1: I stop asking "what's the residual at this x" and start asking "what's the total cost for this choice of line."</p>
+
+  <h4>Why square the error instead of using distance directly?</h4>
+  <p>This genuinely confused me for a while, and it's worth spelling out because the notebooks never resolve it explicitly — it's implicit in every
+  cost function I wrote, always squared, never square-rooted. A few real reasons squaring wins over using the raw (or absolute) residual or a full
+  square-root distance:</p>
+  <ul>
+    <li><strong>Sign cancellation:</strong> residuals can be positive or negative. Summing raw residuals lets errors on opposite sides of the line
+    cancel out, making a badly-fit line look artificially good. Squaring removes the sign, so every error contributes positively.</li>
+    <li><strong>Differentiability:</strong> |residual| (absolute value) also removes the sign, but it has a sharp corner at residual = 0, where the
+    derivative doesn't exist. Squaring produces a smooth parabola with a well-defined derivative everywhere — essential once Stage 4 needs to
+    differentiate the cost.</li>
+    <li><strong>No square root needed:</strong> a full distance formula would require √(...), which is more expensive to differentiate and doesn't
+    change where the minimum sits (minimizing squared distance and minimizing distance itself give the same optimal point, since square-root is
+    monotonic for non-negative inputs) — so squaring is "free" simplification, not an approximation.</li>
+  </ul>
+
+  <div class="callout mistake">
+    <span class="tag">Confusion I actually had</span>
+    <p style="margin:0;">I kept wondering why I didn't just use the literal distance formula everywhere, since the original problem statement (Stage 0)
+    talks about "square of distance." The resolution: squared distance <em>is</em> the cost — I never needed the square root at all, because I only
+    ever care about comparing costs to find a minimum, not about the literal distance value in the original units. Once I stopped trying to recover an
+    actual distance number and accepted that "cost" is just "sum of squares," differentiating it stopped being confusing.</p>
+  </div>
+
+  <h4>Watching cost change as m, b change</h4>
+  <p>Go back to the hero widget and move the sliders — the "Total squared error (cost)" readout is <code>C(m,b)</code> evaluated live. Notice it never
+  goes negative, and it has one clear region where it's smallest. That region is the subject of Stage 3.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 2</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Residual vs. squared error vs. total cost as three distinct, increasingly aggregated quantities.</li>
+          <li>Why cost has to be a function of the parameters once the data is fixed.</li>
+          <li>Why squaring beats both raw residuals and absolute value.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Why square instead of using the actual distance formula, given that my own problem statement mentioned distance explicitly.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Realizing the goal was never to recover a real distance value — it was to find where the cost is smallest. Since squaring preserves the
+        location of the minimum and is smoother to differentiate, the square root was never actually needed.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For towers (2,3) and (9,5) and a line m=0.3, b=3: compute both residuals, both squared errors, and the total cost from just these two
+        points. Then explain in one sentence why total cost can never be negative.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why does squared error avoid the sign-cancellation problem that raw residuals have?</summary>
+      <div class="qa-answer">A positive residual and a negative residual of equal magnitude sum to zero if left raw, hiding two genuine errors as
+      "no error." Squaring makes both contributions positive before summing, so errors always accumulate rather than cancel.</div>
+    </details>
+    <details class="qa"><summary>Why is smoothness (differentiability) important enough to prefer squared error over absolute error?</summary>
+      <div class="qa-answer">Because minimizing the cost later requires computing its derivative (Stage 4) to know which direction decreases it. |x| has
+      no defined derivative exactly at 0, creating an awkward corner right at perfect fit. x² is smooth everywhere, so gradient-based methods have a
+      well-defined direction to follow at every point, including near the minimum.</div>
+    </details>
+    <details class="qa"><summary>Does minimizing squared distance give the same answer as minimizing actual distance?</summary>
+      <div class="qa-answer">Yes — for non-negative values, squaring is a strictly increasing (monotonic) transformation, so whatever point minimizes
+      distance also minimizes squared distance, and vice versa. That's why the square root can be dropped without changing the answer, only the
+      shape of the cost surface.</div>
+    </details>
+    <details class="qa"><summary>What's the actual difference between "residual" and "squared error" in one sentence?</summary>
+      <div class="qa-answer">A residual is a signed measure of how far off one prediction is (can be negative); squared error is that same quantity
+      squared, so it's always non-negative and emphasizes larger mistakes disproportionately.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: cost is a function of two numbers, m and b. What does that function actually look like?</p>
+</section>
+<section class="stage" id="stage3">
+  <div class="stage-eyebrow"><span class="num">3</span>Stage 3 — The cost surface</div>
+  <h2 class="title">C(m,b) isn't a curve — it's a surface, and "minimum" means something specific on it</h2>
+  <p class="subtitle">What I knew before this stage: cost is one number per (m,b) pair. What I didn't know: what the shape of "all possible costs" looks like.</p>
+
+  <h4>From one number to a whole surface</h4>
+  <p>Stage 2 gave me a way to compute <code>C(m,b)</code> for one specific line. But nothing stops me from computing it for <em>every</em> possible
+  (m,b) — and if I do, and plot the result with m along one axis, b along another, and cost as height, I get a 3D surface. This is the object Newton's
+  method's opening markdown cell in <code>optimization_using_newton_method.ipynb</code> is actually about:</p>
+  <div class="output-block">Newton method work to find value where the f(x) = 0
+as we need the minimum value of our function c(m,b) we require c'(m,b) = 0
+because it tells the value where slope is zero — that's the point of minima or maxima</div>
+
+  <h4>What "minimum" means on this surface</h4>
+  <p>Because every term in <code>C(m,b) = Σ(m·xᵢ + b − yᵢ)²</code> is a square, and a sum of squares (each convex in m,b) is itself convex, the surface
+  for enough well-spread towers is bowl-shaped: one lowest point, no other dips to get trapped in. "Minimum" means the (m,b) pair sitting at the bottom
+  of that bowl — the line that makes total squared error as small as it can possibly be.</p>
+
+  <h4>What it means for the gradient to be zero</h4>
+  <p>At the very bottom of a bowl, the surface is momentarily flat in every direction — nudging m slightly, or b slightly, doesn't change the height
+  to first order. That "flatness in every direction" is exactly what "gradient equals zero" captures, and it's why Stage 4's derivatives matter: the
+  minimum is defined as the point where both partial derivatives vanish simultaneously.</p>
+
+  <h4>A hidden case where the bowl isn't a bowl</h4>
+  <p>Look closely at cell 9 of <code>regression_one_tower_problem.ipynb</code>: I tested gradient descent using <strong>only one tower</strong>,
+  the point (2, 3):</p>
+  <pre class="code">x,y = symbols('x y', positive='Integer')
+x = 2
+y = 3
+cost_exp = (m*x + b - y)**2</pre>
+  <p>With only one point, <code>C(m,b) = (2m + b − 3)²</code> is zero along the <em>entire line</em> <code>2m + b = 3</code> — not at one point.
+  That's a valley, not a bowl: infinitely many (m,b) pairs achieve the exact minimum (cost = 0), because one equation (one tower) can't pin down two
+  unknowns (m and b). Sure enough, the notebook's gradient descent converged to <code>(m, b) ≈ (0.4, 2.2)</code> — check it: <code>2(0.4) + 2.2 = 3.0</code>,
+  right on that line, but not the same point I'd get starting from a different initial guess. The bowl only becomes a true single-point bowl once
+  enough towers (with different x-values) are included to fully determine both m and b — which is exactly what the 5-tower dataset does.</p>
+
+  <div class="widget">
+    <div class="widget-head"><span class="wt">Interactive · the cost surface C(m,b)</span></div>
+    <div class="widget-body">
+      <canvas id="surfaceCanvas" width="560" height="420"></canvas>
+      <div class="controls">
+        <div class="ctrl">
+          <label>Dataset</label>
+          <select id="surfaceDataset">
+            <option value="5">All 5 towers (a true bowl)</option>
+            <option value="1">Just tower (2,3) (a valley)</option>
+          </select>
+        </div>
+        <button class="btn secondary" id="surfaceReset">Reset view</button>
+      </div>
+      <div class="readout">Click anywhere on the surface to drop a point. Cost at that (m,b): <b id="surfaceCostReadout">–</b></div>
+      <div class="legend">
+        <span><i style="background:#1c3d5a"></i>low cost</span>
+        <span><i style="background:var(--copper)"></i>high cost</span>
+        <span><i style="background:var(--red)"></i>your point</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 3</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Cost as a 3D surface over the (m,b) plane, not just a number.</li>
+          <li>Why squared-error costs tend to be bowl-shaped (convex).</li>
+          <li>Gradient = 0 as "flat in every direction" at the bottom.</li>
+          <li>Why one data point under-determines a 2-parameter model.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Why the single-tower gradient descent in cell 9 always converged to <em>some</em> answer, but a different answer depending on the starting
+        (m,b) — that felt like a bug at first.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Realizing it wasn't a bug at all — the cost surface for one point genuinely has infinitely many minima lying along a line, so gradient
+        descent correctly finds <em>the closest one to where it started</em>, not "the" answer, because there isn't a unique one.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For a single tower (x₀,y₀), write C(m,b)=(mx₀+b−y₀)². Show algebraically that C=0 exactly along the line b = y₀ − m·x₀, confirming it's a
+        whole line of solutions, not one point.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why is the cost surface for enough spread-out towers bowl-shaped rather than having multiple dips?</summary>
+      <div class="qa-answer">Each term (m·xᵢ+b−yᵢ)² is a convex function of (m,b) — a paraboloid opening upward. A sum of convex functions is convex, so
+      the total cost has a single global minimum region with no separate local dips to get trapped in, as long as the towers aren't degenerate
+      (e.g. all at the same x).</div>
+    </details>
+    <details class="qa"><summary>What does it mean geometrically for the gradient to be zero at a point on the surface?</summary>
+      <div class="qa-answer">It means the surface is momentarily flat in every direction at that point — moving a tiny step in any direction (changing
+      m slightly, b slightly, or both) doesn't change the cost to first order. That's the defining condition of a smooth surface's minimum (or
+      maximum, or saddle).</div>
+    </details>
+    <details class="qa"><summary>Why does one tower alone fail to determine a unique best line?</summary>
+      <div class="qa-answer">One tower gives one equation relating m and b (mx₀+b=y₀), but there are two unknowns. One equation in two unknowns has
+      infinitely many solutions — a whole line in (m,b)-space — not a single point.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: to find the bottom of the bowl mathematically, I need the tool that finds where a surface is flat — differentiation.</p>
+</section>
+<section class="stage" id="stage4">
+  <div class="stage-eyebrow"><span class="num">4</span>Stage 4 — Derivatives</div>
+  <h2 class="title">Differentiation tells me which way is downhill</h2>
+  <p class="subtitle">What I knew before this stage: the minimum is where the surface is flat. What I didn't know: how to find that point without checking every (m,b) by hand.</p>
+
+  <h4>Why differentiation is needed</h4>
+  <p>Checking every possible (m,b) pair to find the smallest cost isn't feasible — there are infinitely many. Differentiation gives something far more
+  useful than a brute-force scan: at any single (m,b), it tells me the <em>direction</em> in which cost is increasing fastest. If I know which way is
+  "uphill," I automatically know which way is "downhill," and I can move that way to make cost smaller — without ever having evaluated the whole
+  surface.</p>
+
+  <h4>The derivative with respect to m</h4>
+  <p>Starting from <code>C(m,b) = Σᵢ(m·xᵢ + b − yᵢ)²</code>, treat b as fixed and differentiate with respect to m using the chain rule — each term is
+  (something)², so its derivative is 2·(something)·(derivative of something):</p>
+  <div class="formula"><span class="lbl">∂C/∂m</span>∂C/∂m = Σᵢ 2·(m·xᵢ + b − yᵢ)·xᵢ</div>
+  <p>The <code>xᵢ</code> at the end comes from ∂/∂m of (m·xᵢ), which is just xᵢ. So each tower contributes its own error, scaled by its own x-position.</p>
+
+  <h4>The derivative with respect to b</h4>
+  <div class="formula"><span class="lbl">∂C/∂b</span>∂C/∂b = Σᵢ 2·(m·xᵢ + b − yᵢ)</div>
+  <p>Same chain rule, but ∂/∂b of (b) is just 1, so no extra factor appears — every tower contributes its error unscaled.</p>
+
+  <h4>The gradient, as a pair of partials</h4>
+  <div class="formula"><span class="lbl">Gradient</span>∇C(m,b) = [ ∂C/∂m , ∂C/∂b ]</div>
+  <p>The gradient is nothing more mysterious than "both partial derivatives, collected into one vector." Geometrically, it points in the direction of
+  <em>steepest ascent</em> on the cost surface — the direction that increases C the fastest, from wherever you're currently standing. Moving in the
+  <em>opposite</em> direction is therefore the direction of steepest descent — this single geometric fact is the entire justification for gradient
+  descent in Stage 5.</p>
+
+  <h4>My first implementation — where I actually made a mistake</h4>
+  <div class="code-label">regression_one_tower_problem.ipynb — cell 7</div>
+  <pre class="code"><span class="c"># now calculate the gradient that use for gradient descent</span>
+
+def gradient(m,b):
+    dm = np.zeros(len(tx))
+    db = np.zeros(len(tx))
+
+    for i in range(len(tx)):
+        error = m*tx[i] + b - ty[i]
+        dm[i] = 2*error*tx[i]
+        db[i] = 2*error
+
+    return dm,db
+
+
+dcdm , dcdb = gradient(2,3)
+print(dcdm,dcdb)</pre>
+  <div class="output-block">[ -8.  70. 378. 126.  54.] [-4. 14. 42. 18. 18.]</div>
+
+  <div class="callout mistake">
+    <span class="tag">Mistake — the gradient function, vs. calling the gradient function correctly</span>
+    <p style="margin:0;">This function computes each tower's <em>individual</em> contribution to the gradient and stores it in an array of length 5 —
+    but it never sums them. <code>∂C/∂m</code> is supposed to be <strong>one number</strong>: the sum over all towers. What <code>gradient(2,3)</code>
+    actually returns is <code>[2·errorᵢ·xᵢ for each i]</code> and <code>[2·errorᵢ for each i]</code>, unsummed — you can see this directly in the
+    printed output: five separate values, not two. This is the "gradient function vs. calling the gradient function" trap: the function looks correct
+    (it uses the right per-term formula), but calling it and using its raw output as "the gradient" silently uses the wrong object — an array of
+    per-point slopes instead of the one total slope.</p>
+  </div>
+  <p>There's also a second, quieter issue in this same notebook: the line right after it, defining <code>gradient_descent(dcdm, dcdb, m, b, alpha, iteration)</code>,
+  was written to take <code>dcdm, dcdb</code> as arguments directly — but it also contains <code>print("m: "+ m + " b: " + b)</code>, string-concatenating
+  numbers, which throws a <code>TypeError</code> the moment it actually runs. There is no output cell underneath it in the notebook — it was written
+  but never successfully executed. It gets quietly superseded a cell later by a version that works.</p>
+
+  <h4>The version that actually works — a single point, summed correctly</h4>
+  <div class="code-label">regression_one_tower_problem.ipynb — cell 9</div>
+  <pre class="code">def dfdm(a,c):
+    return diff(cost_exp,m).evalf(subs={m:a,b:c})
+
+def dfdb(a,c):
+    return diff(cost_exp,b).evalf(subs={m:a,b:c})</pre>
+  <p>Here I switched strategy entirely: instead of manually looping and manually differentiating by hand, I let SymPy's <code>diff()</code> compute the
+  exact symbolic derivative of <code>cost_exp</code>, then substitute in numeric values with <code>.evalf(subs=...)</code>. This sidesteps the
+  "forgot to sum" mistake completely, because SymPy differentiates the <em>already-summed</em> cost expression — there's no per-point array to
+  accidentally leave unsummed. This is the moment symbolic differentiation enters the journey (formalized in Stage 7).</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 4</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>∂C/∂m and ∂C/∂b via the chain rule on a sum of squares.</li>
+          <li>The gradient as a vector of partial derivatives pointing uphill.</li>
+          <li>Why "steepest descent" is just "negative gradient."</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>My own gradient() function ran without error and produced numbers that looked plausible (an array of floats) — nothing about the output
+        screamed "this is wrong," which is exactly why the missing sum was easy to miss.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Switching to SymPy's <code>diff()</code> on the whole summed cost expression, which structurally can't produce a per-point array — its
+        output is a single expression, forcing the "one number per partial derivative" shape to be correct by construction.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For towers (2,3) and (4,6) only, with m=1, b=0: compute the per-point contributions to ∂C/∂m and ∂C/∂b by hand, then sum them to get the
+        true gradient. Compare to what my buggy <code>gradient()</code> function above would have returned instead.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why is the gradient a vector rather than a single number?</summary>
+      <div class="qa-answer">Because the cost depends on two independent parameters, m and b, each of which can be nudged separately. The gradient
+      needs one component per parameter (∂C/∂m and ∂C/∂b) to fully describe how the cost responds to a small change in any direction in that
+      2-dimensional parameter space.</div>
+    </details>
+    <details class="qa"><summary>What exactly went wrong in the first gradient() implementation?</summary>
+      <div class="qa-answer">It computed the correct per-tower contribution to each partial derivative, but returned an array of those per-tower
+      contributions instead of summing them into two single numbers. The true ∂C/∂m and ∂C/∂b are sums over all towers, not lists of individual
+      tower terms.</div>
+    </details>
+    <details class="qa"><summary>Why does using SymPy's diff() on the full summed cost expression avoid that mistake structurally?</summary>
+      <div class="qa-answer">Because diff() operates on the already-summed symbolic expression C(m,b), its result is a single symbolic expression
+      representing the whole derivative — there's no intermediate per-point array that could be left unsummed by accident.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: with a working gradient, I can finally build an algorithm that walks downhill step by step.</p>
+</section>
+<section class="stage" id="stage5">
+  <div class="stage-eyebrow"><span class="num">5</span>Stage 5 — Gradient descent</div>
+  <h2 class="title">Walking downhill, one step at a time — and watching it go wrong in three different ways</h2>
+  <p class="subtitle">What I knew before this stage: the negative gradient points downhill. What I didn't know: how big a step to take, or what happens when I get that wrong.</p>
+
+  <h4>The mathematical idea</h4>
+  <p>If the negative gradient points downhill from wherever I'm standing, then repeatedly taking a small step in that direction should walk me toward
+  the minimum. That's the entire idea — everything else is bookkeeping around how big the step is and how many times I take it.</p>
+
+  <h4>The update rule</h4>
+  <div class="formula"><span class="lbl">Update rule</span>m ← m − α·∂C/∂m
+b ← b − α·∂C/∂b</div>
+  <ul>
+    <li><strong>α (alpha), the learning rate:</strong> how big a step to take. Too small and progress crawls; too large and the step overshoots the
+    minimum entirely.</li>
+    <li><strong>Initial parameters:</strong> where the walk starts. Since (for a true bowl) the surface is convex, the starting point only affects how
+    long the walk takes, not where it ends up — unlike the single-tower valley case from Stage 3, where the starting point determines <em>which</em>
+    minimum is found.</li>
+    <li><strong>Iterations:</strong> how many steps to take before stopping.</li>
+  </ul>
+  <p>Why does this move toward the minimum at all? Because at every step, moving a small enough distance in the negative-gradient direction is
+  guaranteed to decrease the cost (that's what "steepest descent direction" means, to first order). Repeating that enough times, with small enough
+  steps, has to end up at a point where there's no more downhill left to go — the minimum.</p>
+
+  <h4>Mistake — gradient ascent instead of descent</h4>
+  <div class="code-label">regression_one_tower_problem.ipynb — cell 8 (written, but never successfully run)</div>
+  <pre class="code">def gradient_descent(dcdm,dcdb,m,b,alpha=0.2,iteration=100):
+    for i in range(iteration):
+        m , b = m + alpha*dcdm , b + alpha*dcdb
+        print("m: "+ m , " b: " + b)
+
+    return m,b</pre>
+  <div class="callout mistake">
+    <span class="tag">Sign error</span>
+    <p style="margin:0;">This adds <code>alpha*dcdm</code> instead of subtracting it — that's <strong>gradient ascent</strong>, moving toward higher
+    cost, not lower. Combined with the string-concatenation bug in the print statement (which would crash immediately on real numbers), this function
+    was never actually exercised — it's a clean example of writing the update rule with the wrong sign on the very first attempt, a mistake that's
+    easy to make since "descent" and "the gradient" both sound like they should point the same way, when in fact descent means going
+    <em>against</em> the gradient.</p>
+  </div>
+  <p>The corrected direction shows up immediately in the very next cell, <code>grad_desc(dfdm,dfdb,a,c,alpha,iteration)</code>, which subtracts:
+  <code>a, c = a - alpha*dfdm(a,c) , c - alpha*dfdb(a,c)</code> — this is the version that actually converges.</p>
+
+  <h4>Experiment — overshoot as a stable oscillation</h4>
+  <p>Cell 10 of the same notebook tries several learning rates on the single-tower problem starting from (m,b) = (18, 23). One of the runs produces
+  this, forever:</p>
+  <div class="output-block">m:  -26.8000000000000 b:  0.599999999999998
+m:  18.0000000000000 b:  23.0000000000000
+m:  -26.8000000000000 b:  0.599999999999998
+m:  18.0000000000000 b:  23.0000000000000
+... (repeats indefinitely)</div>
+  <p>This is overshoot in its purest form: the step size is large enough that each update leaps clean over the minimum and lands on the <em>opposite</em>
+  side, symmetric enough that the next update leaps right back. Instead of converging, the walk bounces between two points forever — neither
+  approaching the minimum nor diverging to infinity, just perfectly overshooting every single time. Mathematically, this happens because for this
+  single-point cost (a valley, from Stage 3), the update along the direction perpendicular to the valley behaves like x ← x − α·k·x for some constant
+  k; when α·k = 2, that update becomes x ← −x — an exact flip every step, which is precisely a 2-cycle.</p>
+
+  <h4>Experiment — real divergence</h4>
+  <p>In <code>linear_regression.ipynb</code>, the same 5-tower dataset with a learning rate of 0.5 blows up completely within 10 iterations:</p>
+  <div class="output-block">m: -348.000000000000 b:-46.0000000000000
+m: 71073.0000000000 b:10300.0000000000
+m: -14513161.0000000 b:-2102293.00000000
+m: 2963598836.00000 b:429290865.000000
+...
+m: 2.14864086297759E+23 b:3.11240466507612E+22</div>
+  <p>Here α·k is greater than 2 (not just equal to it), so each step doesn't just flip sign — it flips sign <em>and grows in magnitude</em>. Every
+  update makes the next update larger, and the sequence runs away to infinity exponentially fast. This is the mathematical reason "too large a
+  learning rate" doesn't just slow convergence — past a threshold, it guarantees divergence.</p>
+
+  <h4>Experiment — painfully slow convergence</h4>
+  <p>The opposite failure shows up a few cells later: 1000 randomly-scaled towers (x up to 500), learning rate shrunk all the way to <code>1e-8</code>,
+  run for up to <strong>1,000,000 iterations</strong> — and it still hadn't fully converged (b was creeping toward 7 at a rate of about +0.00004 per
+  100 iterations by the end). A learning rate small enough to avoid divergence on the large-scale feature (m) turns out to be far too small to make
+  timely progress on the small-scale one (b). This exact experiment is what Stage 13 comes back to explain properly, once feature scale is named as
+  the real culprit.</p>
+
+  <div class="widget">
+    <div class="widget-head"><span class="wt">Interactive · gradient descent explorer</span></div>
+    <div class="widget-body">
+      <canvas id="gdCanvas" width="560" height="420"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Learning rate α <span class="val" id="gdAlphaVal">0.010</span></label><input type="range" id="gdAlpha" min="-4" max="0.32" step="0.005" value="-2"></div>
+        <div class="ctrl"><label>Initial m <span class="val" id="gdM0Val">-1.0</span></label><input type="range" id="gdM0" min="-3" max="3" step="0.1" value="-1"></div>
+        <div class="ctrl"><label>Initial b <span class="val" id="gdB0Val">10.0</span></label><input type="range" id="gdB0" min="-5" max="12" step="0.1" value="10"></div>
+        <button class="btn" id="gdRun">Run 60 steps</button>
+        <button class="btn secondary" id="gdClear">Clear</button>
+      </div>
+      <div class="readout">Step: <b id="gdStep">0</b> &nbsp; Cost: <b id="gdCostVal">–</b> &nbsp; Status: <b id="gdStatus" class="teal">ready</b></div>
+      <div class="legend">
+        <span><i style="background:var(--copper)"></i>tower</span>
+        <span><i style="background:var(--teal)"></i>current line</span>
+        <span><i style="background:var(--red)"></i>path in (m,b) space →see mini-map</span>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px; color:var(--ink-faint);">The α slider is scaled so tiny and huge learning rates are both reachable. Try α around
+  0.03–0.06 (converges smoothly), around 0.09–0.1 (oscillates, similar to the two-value repeat above), and above ~0.13 (diverges, similar to the
+  1e23 blow-up above).</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 5</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>The update rule and why it subtracts (not adds) the gradient.</li>
+          <li>Learning rate as controlling step size, with a precise threshold between oscillation and divergence.</li>
+          <li>Why too-small a rate is "safe" but can be impractically slow.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Seeing the exact same two (m,b) pairs repeat forever looked like a print-loop bug the first time I saw it, not a real property of the
+        optimization.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Working out that near a quadratic minimum, gradient descent behaves like repeatedly multiplying the distance-to-minimum by a fixed factor
+        (1 − α·k). If that factor is exactly −1, you get a perfect flip forever; if its magnitude exceeds 1, you get divergence; if its magnitude is
+        below 1, you get convergence — one formula explains all three experiments.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Near a 1-D quadratic minimum, show that the update m ← m − α·C'(m) can be rewritten as (m − m*) ← (1 − α·k)·(m − m*) for the local
+        curvature k. Explain what happens for |1−αk| &lt; 1, = 1, and &gt; 1.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>What happens if you add the gradient instead of subtracting it?</summary>
+      <div class="qa-answer">You get gradient <em>ascent</em> — every step moves toward higher cost instead of lower, so the algorithm actively climbs
+      away from the minimum instead of toward it.</div>
+    </details>
+    <details class="qa"><summary>Why does a learning rate that's "just right" for oscillation produce an exact repeating cycle rather than slow drift?</summary>
+      <div class="qa-answer">When the effective per-step multiplier (1 − αk) equals exactly −1, each update flips the distance from the minimum to
+      the exact opposite sign with the same magnitude — landing on a mirror-image point every time, forever, with no net drift in either direction.</div>
+    </details>
+    <details class="qa"><summary>Why does too small a learning rate not cause incorrect results, only slow ones?</summary>
+      <div class="qa-answer">As long as α is positive and small enough that (1 − αk) stays between −1 and 1, every step still moves strictly toward the
+      minimum — it's guaranteed to converge eventually. A smaller α just means smaller steps, so more of them are needed to cover the same distance.</div>
+    </details>
+    <details class="qa"><summary>Why can a single learning rate be simultaneously "too small" and "too large" on the same problem?</summary>
+      <div class="qa-answer">Different parameters can have very different local curvature (k) when features are on very different scales. The threshold
+      for stability (|1−αk|&lt;1) depends on k, so a rate stable for a small-curvature direction can be unstable for a large-curvature one — this is
+      exactly the feature-scaling problem developed fully in Stage 13.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: watching the numbers scroll by isn't very satisfying. What does this optimization actually look like?</p>
+</section>
+<section class="stage" id="stage6">
+  <div class="stage-eyebrow"><span class="num">6</span>Stage 6 — Visualizing the optimization</div>
+  <h2 class="title">Turning a scrolling wall of numbers into something I could actually watch happen</h2>
+  <p class="subtitle">What I knew before this stage: gradient descent produces a sequence of (m,b) values. What I didn't know: how to see that sequence as motion.</p>
+
+  <h4>Storing parameter history</h4>
+  <p>To animate anything, I needed every intermediate (m,b), not just the final answer — so <code>gradient_descent</code> in
+  <code>regression_multi_tower_problem.ipynb</code> started appending each step to a list:</p>
+  <div class="code-label">regression_multi_tower_problem.ipynb — cell 3</div>
+  <pre class="code">def gradient_descent(dcdm,dcdb,a,c,alpha=0.1,iteration=100):
+    history = []
+    cost_data = []
+    for i in range(iteration):
+        a , c = a - alpha*dcdm(a,c) , c - alpha*dcdb(a,c)
+        cos = cost.evalf(subs={m:a,b:c})
+
+        history.append((a,c))
+        cost_data.append(cos)
+        print("m:",a,"b:",c,"cost:",cos)
+
+    return a,c,history,cost_data</pre>
+  <p>This version is safe without any special care: <code>a</code> and <code>c</code> are plain Python floats, and <code>a, c = a - ...</code>
+  rebinds them to brand-new float objects every iteration. Appending the tuple <code>(a,c)</code> stores a snapshot of whatever those floats were at
+  that moment — there's nothing left to mutate later, because floats and tuples are immutable.</p>
+
+  <h4>Why .copy() became necessary later</h4>
+  <p>By the time I wrote the <code>LinearRegression</code> class in <code>linear_regression.ipynb</code>, the parameters had become a single mutable
+  container, <code>m_b</code> (a NumPy array), updated by assigning into its slots rather than rebinding the whole thing:</p>
+  <div class="code-label">linear_regression.ipynb</div>
+  <pre class="code">def gradient_descent(self,m_b,alpha,iteration):
+    history = []
+    grad = self.gradient()
+
+    for i in range(iteration):
+        dm = grad[0].evalf(subs={self.m:m_b[0],self.b:m_b[1]})
+        db = grad[1].evalf(subs={self.m:m_b[0],self.b:m_b[1]})
+        m_b[0],m_b[1] = m_b[0] - alpha*dm , m_b[1] - alpha*db
+        history.append(m_b.copy())
+        print(f"m: {m_b[0]} b:{m_b[1]}")
+
+    return history</pre>
+  <div class="callout fixed">
+    <span class="tag">Why .copy() is not optional here</span>
+    <p style="margin:0;"><code>m_b[0], m_b[1] = ...</code> mutates the <em>same</em> array object in place — it doesn't create a new array the way
+    <code>a, c = a - ...</code> did for plain floats. If <code>history.append(m_b)</code> had been called <em>without</em> <code>.copy()</code>, every
+    entry in <code>history</code> would be a reference to that one same array. By the time the loop finishes, every single entry would show the
+    <em>final</em> converged values — because there was never more than one array in memory, just one array being looked at from many list slots.
+    <code>.copy()</code> forces a real, independent snapshot to be stored at each step, which is the whole point of keeping a history at all.</p>
+  </div>
+  <p>There's real, visible evidence in the notebook of exactly this kind of aliasing having consequences, even though the failure mode above isn't
+  literally shown mid-crash: in cell 4, <code>a_c</code> is passed into <code>l2.gradient_descent(a_c, ...)</code>, which mutates it in place and
+  returns it, converged, around <code>(3.02, 0.0097)</code>. Two cells later, cell 6 calls <code>l2.gradient_optimized(a_c, 0.00000001, 1000000, 100)</code>
+  <strong>without redefining <code>a_c</code> first</strong> — and its very first printed line is already <code>m: 3.000147... b: 6.950...</code>,
+  picking up mid-flight from wherever the array was left, not starting fresh from (0,0). That's the same "the array remembers what happened to it"
+  behavior that makes <code>.copy()</code> necessary for history — just showing up between cells instead of inside a single loop.</p>
+
+  <h4>The animation itself</h4>
+  <div class="code-label">regression_multi_tower_problem.ipynb — cell 8</div>
+  <pre class="code">from matplotlib.animation import FuncAnimation
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+ax.scatter(tx, ty)
+line, = ax.plot([], [], lw=2)
+x = [0, 10]
+
+def init():
+    line.set_data([], [])
+    return line,
+
+def animate(frame):
+    m = history[frame][0]
+    b = history[frame][1]
+    y = [m * i + b for i in x]
+    line.set_data(x, y)
+    return line,
+
+anim = FuncAnimation(fig, animate, init_func=init, frames=len(history), interval=50, blit=True)
+anim.save("gradientdescentline.mp4", writer="ffmpeg", fps=30)</pre>
+  <p>Conceptually, <code>FuncAnimation</code> just calls <code>animate(frame)</code> repeatedly, once per frame, handing it an increasing frame
+  number. <code>animate</code> looks up <code>history[frame]</code> — the (m,b) recorded at that exact step of gradient descent — recomputes the two
+  endpoints of the line at x=0 and x=10, and redraws it. So <strong>each frame is literally one iteration of gradient descent</strong>: frame 0 is the
+  starting line, frame 1 is after one update, and so on, with the towers plotted once as a fixed scatter underneath. Before committing to the full
+  animation, cell 7 sanity-checked this by hand, manually plotting the line at a handful of chosen iterations (0, 5, 50, 100, 1000, 99999) to see it
+  visibly walking toward the towers before generating the full video.</p>
+
+  <h4>The cost-vs-iteration plot</h4>
+  <pre class="code">iteration = [i for i in range(10000)]
+plt.xlim(0,500); plt.ylim(0,2000)
+plt.xlabel('iteration number'); plt.ylabel('cost')
+plt.plot(iteration,cost_data)
+plt.scatter(iteration,cost_data)
+plt.show()</pre>
+  <p>This is a different, complementary view from the line animation: instead of watching the line move in data-space, it watches the single number
+  <code>cost_data[i]</code> — the height on the Stage 3 surface — fall over iterations. The two plots are two projections of the same underlying walk
+  down the bowl.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 6</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Why immutable values (floats, tuples) don't need <code>.copy()</code> but mutable containers (arrays updated in place) do.</li>
+          <li>What a frame of <code>FuncAnimation</code> actually represents here: one gradient descent iteration.</li>
+          <li>Cost-vs-iteration as a second, simpler view of the same optimization.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Why the same "storing a history" pattern needed different treatment in two different notebooks — it looked like inconsistent style rather
+        than a real, principled difference.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Recognizing that it comes down to rebinding vs. mutation: <code>a, c = a - ...</code> creates new objects every time; <code>arr[0] = ...</code>
+        changes an existing object in place. Whether <code>.copy()</code> is needed depends entirely on which of those two things the update code
+        does.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Write two 3-line Python snippets: one that updates a running (m,b) pair as plain floats and appends to a list, one that updates a NumPy
+        array in place and appends to a list without <code>.copy()</code>. Predict, before running, what each list looks like at the end.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why doesn't `history.append((a,c))` need `.copy()` when a, c are plain floats?</summary>
+      <div class="qa-answer">Because `a, c = a - alpha*dm, c - alpha*db` creates brand-new float objects each iteration rather than modifying existing
+      ones. The tuple appended captures those specific objects, which are never touched again afterward.</div>
+    </details>
+    <details class="qa"><summary>What would `history` contain if `.copy()` were removed from `history.append(m_b.copy())`?</summary>
+      <div class="qa-answer">Every entry would be a reference to the same single array object. Since that array keeps being mutated in place for every
+      remaining iteration, by the end of the loop every entry in the history — even the ones "recorded" on iteration 1 — would show the final,
+      fully-converged values.</div>
+    </details>
+    <details class="qa"><summary>In the FuncAnimation code, what does a single "frame" correspond to mathematically?</summary>
+      <div class="qa-answer">One entry of `history` — i.e., one completed iteration of gradient descent, with its own (m,b) pair and therefore its own
+      line.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: all of this leaned on SymPy's symbolic <code>.evalf()</code> inside the loop. Why did that eventually need to change?</p>
+</section>
+<section class="stage" id="stage7">
+  <div class="stage-eyebrow"><span class="num">7</span>Stage 7 — Symbolic vs. numerical computation</div>
+  <h2 class="title">From "let SymPy differentiate it" to "I don't need SymPy at all anymore"</h2>
+  <p class="subtitle">What I knew before this stage: SymPy's diff() gives an exact derivative. What I didn't know: that evaluating it repeatedly, symbolically, is slow — and eventually unnecessary.</p>
+
+  <h4>Step 1 — pure symbolic, evaluated with .evalf() every iteration</h4>
+  <p>The earliest working gradient descent (Stage 4/5) called <code>.evalf(subs=...)</code> inside the loop, every single iteration:</p>
+  <pre class="code">dm = diff(cost_exp,m).evalf(subs={m:a,b:c})</pre>
+  <p>This works, but <code>diff(cost_exp,m)</code> is a symbolic SymPy expression, and <code>.evalf(subs=...)</code> re-walks that whole expression
+  tree and substitutes numbers into it <strong>from scratch, every single call</strong>. For a handful of iterations on 5 towers this is invisible;
+  for hundreds of thousands of iterations on 1000 towers, it's the main reason the slow experiments in Stage 5 and Stage 13 take so long to run.</p>
+
+  <h4>Why a NumPy array can't just use .evalf()</h4>
+  <p>SymPy's <code>.evalf()</code> is a method that exists on SymPy expression and number objects — it doesn't know anything about NumPy arrays, and
+  NumPy arrays don't know how to call it element-by-element automatically. This is directly visible in <code>optimization_using_newton_method.ipynb</code>:</p>
+  <pre class="code">def gradient_c(a_c):
+    return np.array([dm.evalf(subs={m:a_c[0],b:a_c[1]}),db.evalf(subs={m:a_c[0],b:a_c[1]})])</pre>
+  <div class="output-block">array([-0.00609756097560976, 4.83536585365854], dtype=object)</div>
+  <div class="callout mistake">
+    <span class="tag">Symbolic vs. NumPy objects</span>
+    <p style="margin:0;">Look at the dtype: <code>object</code>, not <code>float64</code>. <code>.evalf()</code> returns a SymPy <code>Float</code>
+    object — a fully symbolic type, not a native Python or NumPy float. Wrapping two of them in <code>np.array([...])</code> doesn't convert them; NumPy
+    just stores the SymPy objects as-is, in a slow, generic "array of arbitrary Python objects" mode instead of a fast native numeric array. Every
+    downstream arithmetic operation on this array falls back to SymPy's (slow) arithmetic instead of NumPy's (fast) vectorized arithmetic — invisibly.
+    It still gives correct numbers, which is exactly why this is easy to miss: nothing crashes, it's just quietly much slower and structurally not a
+    "real" NumPy array.</p>
+  </div>
+
+  <h4>Step 2 — lambdify: compiling symbolic expressions into numeric functions</h4>
+  <p><code>regression_multi_tower_problem.ipynb</code> introduces the fix:</p>
+  <pre class="code">from sympy.utilities.lambdify import lambdify
+
+dcdm_exp = diff(cost,m)
+dcdb_exp = diff(cost,b)
+
+dcdm = lambdify((m,b),dcdm_exp,'numpy')
+dcdb = lambdify((m,b),dcdb_exp,'numpy')</pre>
+  <p><code>diff()</code> is still doing the actual calculus — nothing about the math changes. What changes is that <code>lambdify</code> takes the
+  resulting symbolic expression <strong>once</strong> and compiles it into an ordinary Python function that uses plain NumPy/Python arithmetic
+  internally. From that point on, <code>dcdm(a,c)</code> is just a normal function call — no expression tree walking, no substitution dictionary, no
+  SymPy Float objects. The symbolic work happens exactly once, up front; every iteration afterward is pure numeric evaluation.</p>
+  <p>The <code>LinearRegression</code> class in <code>linear_regression.ipynb</code> makes this speed difference explicit by keeping <em>both</em>
+  versions side by side: <code>gradient_descent</code> (still using <code>.evalf(subs=...)</code> every step) and <code>gradient_optimized</code>
+  (using <code>lambdify</code> once, then calling the compiled function every step) — literally the "before" and "after" of this exact upgrade, kept
+  in the same file.</p>
+  <p>One inconsistency worth preserving: even after discovering <code>lambdify</code> and using it in <code>gradient_optimized</code>,
+  <code>newton_optimization</code> in that same class still calls <code>.evalf(subs=...)</code> inside its loop. The lesson from Step 1 hadn't yet been
+  applied everywhere — a very normal, uneven kind of refactoring where a better pattern is adopted in the place it was just learned, but not yet
+  propagated to every other function that could use it.</p>
+
+  <h4>Step 3 — dropping symbolic computation entirely</h4>
+  <p>The final version, <code>MultiRegressionGeneral</code> in <code>multiple_regression.ipynb</code>, doesn't import SymPy at all. Once the gradient
+  of a sum-of-squares cost has a known closed form (Stage 10's <code>2·Xᵀe</code>), there's no need to symbolically differentiate anything ever
+  again — the formula can just be written directly in NumPy:</p>
+  <pre class="code">def gradient(self):
+    prediction = (self.param[:-1, None] * self.data).sum(axis=0) + self.param[-1]
+    error = prediction - self.output
+    grad_w = 2 * (self.data @ error)
+    grad_b = 2 * np.sum(error)
+    return np.append(grad_w,grad_b)</pre>
+  <p>This is the real end-point of Stage 7's arc, and it's a better sequence than "symbolic → lambdify → done": <strong>symbolic differentiation
+  (SymPy) was a tool for discovering and checking the formula</strong>, not something a finished implementation needs to carry forward. Once the
+  formula for the gradient of squared error is known and trusted, computing it is pure linear algebra — faster than even the lambdified version,
+  because there's no compiled-expression call overhead at all, just array operations.</p>
+
+  <h4>Symbolic vs. numeric vs. vectorized numeric, side by side</h4>
+  <ul>
+    <li><strong>Symbolic representation:</strong> <code>diff(cost,m)</code> — an expression tree, exact, general, but not evaluated.</li>
+    <li><strong>Numerical evaluation:</strong> <code>.evalf(subs={...})</code> or a <code>lambdify</code>'d function called on scalars — one specific
+    number, computed once.</li>
+    <li><strong>Vectorized numerical computation:</strong> <code>2 * (self.data @ error)</code> — every tower's contribution computed simultaneously
+    as array operations, with no Python-level loop or per-call overhead at all (fully explored in Stage 10).</li>
+  </ul>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 7</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>The real cost of re-substituting into a symbolic expression on every loop iteration.</li>
+          <li>What lambdify actually does: compile once, call many times.</li>
+          <li>Why a finished implementation can drop symbolic math entirely once the formula is known.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Why an array of SymPy Floats "worked" but felt wrong — everything computed correctly, so there was no obvious signal that
+        <code>dtype=object</code> meant something was structurally off.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Explicitly checking <code>.dtype</code> on arrays that came from SymPy evaluation and noticing <code>object</code> instead of
+        <code>float64</code> — that one detail exposed that these weren't "real" NumPy arrays at all.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Explain, without running any code, why <code>np.array([sympy_expr.evalf(), sympy_expr.evalf()])</code> produces a <code>dtype=object</code>
+        array, and what a subsequent NumPy matrix multiplication against that array would actually be doing under the hood.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>What's the practical difference between calling .evalf(subs=...) every iteration versus using lambdify?</summary>
+      <div class="qa-answer">.evalf(subs=...) re-walks and re-substitutes into the full symbolic expression tree on every call. lambdify does that
+      translation work exactly once, producing a plain numeric function — every subsequent call is ordinary fast arithmetic with none of the
+      symbolic overhead.</div>
+    </details>
+    <details class="qa"><summary>Why does an array built from .evalf() results end up as dtype=object instead of dtype=float64?</summary>
+      <div class="qa-answer">.evalf() returns SymPy Float objects, a symbolic type NumPy doesn't recognize as native numeric data. Since NumPy can't safely
+      convert them to float64 automatically inside np.array(...), it falls back to storing them as generic Python objects.</div>
+    </details>
+    <details class="qa"><summary>Why didn't the final MultiRegressionGeneral implementation need SymPy at all?</summary>
+      <div class="qa-answer">Because the gradient of a sum-of-squares cost has a known, general closed-form expression (2·Xᵀe). Once that formula is
+      derived and trusted, there's nothing left to differentiate symbolically — computing the gradient is just evaluating that formula with NumPy.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: gradient descent only uses first-order (slope) information. What if I use curvature too?</p>
+</section>
+<section class="stage" id="stage8">
+  <div class="stage-eyebrow"><span class="num">8</span>Stage 8 — Newton's method</div>
+  <h2 class="title">Using curvature, not just slope — and reaching the minimum in one jump</h2>
+  <p class="subtitle">What I knew before this stage: gradient descent needs many small steps. What I didn't know: a method that uses how the slope itself is changing, not just the slope.</p>
+
+  <h4>Why gradient descent only uses first-order information</h4>
+  <p>The gradient tells you the slope at exactly one point — it says nothing about whether that slope is about to get steeper or flatter as you move.
+  Gradient descent has to find that out the hard way, by taking a step and re-measuring the slope again. Curvature — how fast the slope itself changes
+  — is <em>second-order</em> information, and if it's known, it can be used to jump much more directly toward the minimum instead of repeatedly
+  re-measuring and re-stepping.</p>
+
+  <h4>The Hessian: curvature as a matrix</h4>
+  <p>For a function of two parameters, there isn't just one curvature — there's how ∂C/∂m changes as m changes, how it changes as b changes, and the
+  same again for ∂C/∂b. That's four numbers (two of which turn out equal), naturally arranged as a matrix:</p>
+  <div class="formula"><span class="lbl">Hessian</span>H = [ ∂²C/∂m² &nbsp; ∂²C/∂m∂b ; &nbsp; ∂²C/∂b∂m &nbsp; ∂²C/∂b² ]</div>
+  <p>It's a matrix (not a vector, like the gradient) precisely because curvature is inherently about pairs of directions — how the slope in one
+  direction changes as you move in another — and with n parameters there are n×n such pairings.</p>
+
+  <h4>My implementation, from the Newton notebook</h4>
+  <div class="code-label">optimization_using_newton_method.ipynb</div>
+  <pre class="code">def gradient(cost):
+    dm = diff(cost,m)
+    db = diff(cost,b)
+    return dm,db
+
+def hessian(dm,db):
+    dmb = diff(dm,b)
+    dmm = diff(dm,m)
+    dbm = diff(db,m)
+    dbb = diff(db,b)
+    return np.array([[dmm,dmb],[dbm,dbb]],dtype=float)</pre>
+  <p>Note <code>dtype=float</code> here — this only works because <code>dmm, dmb, dbm, dbb</code> come out as constants with no remaining <code>m</code>
+  or <code>b</code> symbols in them. That's not a coincidence; it's the whole reason Newton behaves so well on this problem (see below).</p>
+
+  <h4>The Newton update</h4>
+  <div class="formula"><span class="lbl">Newton's update rule</span>θ_new = θ − H⁻¹ ∇C(θ)&nbsp;&nbsp;&nbsp;&nbsp;where θ = [m, b]</div>
+  <pre class="code">def newton_optimization(a_c,grad,hess,iteration):
+    for i in range(iteration):
+        a_c = a_c - np.matmul(np.linalg.inv(hess),grad(a_c))
+        print("m:",a_c[0],"b:",a_c[1])
+    return a_c</pre>
+  <div class="output-block">m: -0.00609756097560954 b: 4.83536585365854
+m: -0.00609756097560976 b: 4.83536585365854
+m: -0.00609756097560976 b: 4.83536585365854
+... (identical for all 10 iterations)</div>
+  <p>Every remaining iteration after the first prints the <em>exact same</em> (m,b) — Newton's method reached the minimum on its very first step and
+  then just kept confirming it was already there.</p>
+
+  <h4>Gradient, Hessian, inverse Hessian, and the Newton step — what each one is</h4>
+  <ul>
+    <li><strong>Gradient (∇C):</strong> a vector, direction of steepest ascent. Shape: (n,) for n parameters.</li>
+    <li><strong>Hessian (H):</strong> a matrix of second derivatives, describing curvature in every pair of directions. Shape: (n,n).</li>
+    <li><strong>Inverse Hessian (H⁻¹):</strong> "undoes" the curvature — it rescales the gradient direction by how flat or steep the surface actually
+    is in each direction, instead of taking a fixed-size step regardless of curvature.</li>
+    <li><strong>Newton step (H⁻¹∇C):</strong> the actual displacement applied to θ. Geometrically, it's "the gradient direction, corrected for how the
+    surface curves," rather than "the gradient direction, scaled by a fixed learning rate α."</li>
+  </ul>
+
+  <h4>Why Newton reaches the optimum in essentially one step here</h4>
+  <p>This only happens because of a specific chain of facts about squared-error regression, worth spelling out in full:</p>
+  <ol>
+    <li><strong>The objective is quadratic</strong> in the parameters: C(m,b) = Σ(mxᵢ+b−yᵢ)² expands into terms with m², b², and mb — a quadratic
+    form, nothing higher-order.</li>
+    <li><strong>Its gradient is therefore linear</strong> in the parameters: differentiating a quadratic once always produces something linear
+    (compare: d/dx(x²) = 2x, linear in x).</li>
+    <li><strong>Its Hessian is therefore constant</strong>: differentiating something linear once more produces a constant — no m or b left in it at
+    all, which is exactly why <code>dtype=float</code> worked directly on <code>hessian(dm,db)</code> above.</li>
+    <li><strong>Newton can jump directly to the optimum</strong>: Newton's update is exact whenever the true function is exactly quadratic, because
+    a quadratic function is fully described by its value, gradient, and (constant) curvature at any single point — Newton's step effectively solves
+    "where would this exact quadratic hit zero gradient" directly, in one linear-algebra step, rather than approximating that answer iteratively.</li>
+  </ol>
+  <p>This generalizes cleanly, as confirmed independently in <code>multiple_regression.ipynb</code>'s <code>MultipleRegression.newton_method</code>,
+  which reaches the known parameters <code>[2, 3, 4]</code> starting from <code>[0, 0, 0]</code> immediately, then repeats that answer for every
+  further iteration — the exact same one-step behavior, now with three parameters instead of two. My own comment in that notebook records the
+  insight directly: for a quadratic objective, Newton's method reaches the target in one iteration no matter how many parameters are involved,
+  because the Hessian stays constant regardless of how many dimensions θ has.</p>
+
+  <div class="widget">
+    <div class="widget-head"><span class="wt">Interactive · Newton vs. gradient descent</span></div>
+    <div class="widget-body">
+      <canvas id="newtonCanvas" width="560" height="420"></canvas>
+      <div class="controls">
+        <div class="ctrl"><label>Initial m <span class="val" id="nwM0Val">-1.0</span></label><input type="range" id="nwM0" min="-3" max="3" step="0.1" value="-1"></div>
+        <div class="ctrl"><label>Initial b <span class="val" id="nwB0Val">10.0</span></label><input type="range" id="nwB0" min="-5" max="12" step="0.1" value="10"></div>
+        <div class="ctrl"><label>GD learning rate <span class="val" id="nwAlphaVal">0.03</span></label><input type="range" id="nwAlpha" min="0.005" max="0.09" step="0.005" value="0.03"></div>
+        <button class="btn" id="nwRun">Compare paths</button>
+      </div>
+      <div class="readout">Newton reached the minimum in <b id="nwNewtonSteps">–</b> step(s). Gradient descent used <b id="nwGdSteps">–</b> steps to get within the same tolerance.</div>
+      <div class="legend">
+        <span><i style="background:var(--copper)"></i>Newton's path</span>
+        <span><i style="background:var(--teal)"></i>Gradient descent's path</span>
+      </div>
+    </div>
+  </div>
+
+  <h4>Extension — a numerical improvement I didn't implement</h4>
+  <div class="callout">
+    <span class="tag">Extension / next concept — not in my notebooks</span>
+    <p style="margin:0;">My code always calls <code>np.linalg.inv(hess)</code> explicitly and then multiplies. In practice, explicitly inverting a
+    matrix is more numerically expensive and less numerically stable than solving the linear system H·Δθ = ∇C directly for Δθ (e.g. with
+    <code>np.linalg.solve(hess, grad)</code>), since computing a full inverse does strictly more work than is needed just to get one particular
+    product. For a 2×2 or 3×3 Hessian like mine, this difference is invisible; it starts to matter for larger parameter counts. I'm flagging this as
+    an improvement I could make, not something I actually did.</p>
+  </div>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 8</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>The Hessian as a matrix of second partial derivatives, and why it's a matrix rather than a vector.</li>
+          <li>The Newton update θ − H⁻¹∇C and what each symbol contributes.</li>
+          <li>Why squared-error regression makes Newton's method converge in one step, from first principles.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Seeing the exact same output repeated for every remaining iteration looked like the loop had silently stopped doing anything, the same
+        surprise as the gradient-descent oscillation in Stage 5, but for the opposite reason.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Working through why a quadratic function's Hessian has to be constant — once that clicked, "one step and done" stopped looking like a
+        coincidence or a bug and started looking like the guaranteed, provable outcome for this specific class of cost function.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Starting from C(m)=am²+bm+c (a 1-parameter quadratic), compute C'(m) and C''(m), then show that the Newton update m − C'(m)/C''(m) lands
+        exactly on the true minimum −b/2a regardless of the starting m.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why does Newton's method use a Hessian at all, when gradient descent doesn't need one?</summary>
+      <div class="qa-answer">Gradient descent only asks "which direction is downhill," which the gradient alone answers. Newton's method asks "how far
+      should I step in that direction to actually land at the minimum," which requires knowing how the slope itself is curving — that's precisely
+      what the Hessian encodes.</div>
+    </details>
+    <details class="qa"><summary>Why can Newton's method reach the optimum in one step specifically for least-squares regression?</summary>
+      <div class="qa-answer">Because the least-squares cost is exactly quadratic in the parameters, its gradient is exactly linear, and therefore its
+      Hessian is exactly constant everywhere. Newton's method is exact whenever the true objective is exactly quadratic, since a quadratic is fully
+      characterized by its gradient and (constant) curvature at any single point.</div>
+    </details>
+    <details class="qa"><summary>What's the practical difference between the gradient, the Hessian, and the Newton step?</summary>
+      <div class="qa-answer">The gradient is a direction (a vector). The Hessian is curvature information (a matrix). The Newton step, H⁻¹∇C, combines
+      them into an actual displacement — the gradient direction, rescaled per-direction according to how sharply the surface curves there.</div>
+    </details>
+    <details class="qa"><summary>Would Newton's method still converge in one step for a cost function that wasn't quadratic?</summary>
+      <div class="qa-answer">No — Newton's method would still typically converge fast, but not exactly in one step, because the Hessian would no longer be
+      constant. Each step would only be exact for a local quadratic approximation of the true (non-quadratic) surface, so several iterations would
+      usually be needed.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: everything so far used one feature, x. What changes when a tower — or any data point — has more than one number describing it?</p>
+</section>
+<section class="stage" id="stage9">
+  <div class="stage-eyebrow"><span class="num">9</span>Stage 9 — From one feature to multiple features</div>
+  <h2 class="title">y = mx + b becomes y = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</h2>
+  <p class="subtitle">What I knew before this stage: one input, one output, two parameters. What I didn't know: how the same idea scales when a tower is described by more than one number.</p>
+
+  <h4>Why one feature stopped being enough</h4>
+  <p>Every tower so far had exactly one x-value. But in <code>multiple_regression.ipynb</code>, I explicitly moved to a setting with two inputs per
+  sample — described in my own comment as <em>"two dependent variable distance D and price/unit P"</em> — and asked whether an output could be
+  predicted from <em>both</em> of them at once, not just one. That requires more than one slope: one weight per input feature, plus a single shared
+  bias.</p>
+  <div class="formula"><span class="lbl">From one feature...</span>ŷ = m·x + b</div>
+  <div class="formula"><span class="lbl">...to many</span>ŷ = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</div>
+
+  <h4>Vocabulary, precisely</h4>
+  <ul>
+    <li><strong>Feature:</strong> one measured input quantity (e.g. distance, or price-per-unit). Each sample has n of them.</li>
+    <li><strong>Sample:</strong> one complete data point — a full set of feature values, paired with one target value. In the tower context, one
+    tower's full description.</li>
+    <li><strong>Target / output (y):</strong> the value being predicted for a sample.</li>
+    <li><strong>Parameter / weight (wⱼ):</strong> how much feature j contributes to the prediction, per unit of that feature — the direct
+    generalization of "m".</li>
+    <li><strong>Bias (b):</strong> the same role as before — a constant baseline added regardless of feature values.</li>
+  </ul>
+
+  <h4>Matrix dimensions — the part I have to get exactly right</h4>
+  <p>This is the part of the notebooks where I actually used <strong>two different data orientations in two different classes</strong>, and I'm not
+  silently picking one — both are real, both appear in my code, and knowing which is which matters.</p>
+
+  <div class="callout inconsistency">
+    <span class="tag">Two orientations, both from my own code</span>
+    <p style="margin:0;"><code>MultipleRegression</code> (the first, loop-based, SymPy-driven class) stores data as <strong>samples × features</strong>:
+    each row is one full sample, with the target tacked on as the last column. Its test data literally looks like
+    <code>[[1,2,0],[1,3,0],[3,7,0],...]</code> — each inner list is one tower: <code>[x1, x2, y]</code>.</p>
+    <p style="margin:8px 0 0;"><code>MultiRegressionGeneral</code> (the later, vectorized NumPy class) stores data as <strong>features × samples</strong>:
+    each row is one entire feature's values across every sample. Its test data looks like <code>data = [distance, price]</code> — two rows, each a
+    full array of that one feature across all towers.</p>
+  </div>
+
+  <div class="code-label">MultipleRegression — samples × features orientation</div>
+  <pre class="code">w1,w2,b = symbols('w1 w2 b')
+param = [w1,w2,b]
+data = [[1,2,0],[1,3,0],[3,7,0],[6,4,0],[4,9,0],[10,2,0],[12,15,0]]
+<span class="c"># data[i]      -> one full sample: [x1, x2, y]
+# data[i][j]   -> feature j of sample i, for j in 0..1</span></pre>
+
+  <div class="code-label">MultiRegressionGeneral — features × samples orientation</div>
+  <pre class="code">distance = np.array([1,3,5,10,8,11,16,21,34,2,0], dtype=float)
+price    = np.array([12,3,6,8,9,0,5,6,14,1,56], dtype=float)
+data = [distance, price]
+<span class="c"># data[0]      -> the ENTIRE distance feature, across all samples
+# data[1]      -> the ENTIRE price feature, across all samples</span></pre>
+
+  <p>Neither orientation is "wrong" — plenty of real ML code uses samples × features (it's the more common convention, e.g. scikit-learn's <code>X</code>),
+  and features × samples is also legitimate and, as Stage 10 shows, made my particular vectorized gradient formula (<code>data @ error</code>) fall out
+  very naturally. What matters is being explicit about which one a given piece of code assumes, since the two are not interchangeable without
+  transposing.</p>
+
+  <div class="widget">
+    <div class="widget-head"><span class="wt">Interactive · dimension explorer</span></div>
+    <div class="widget-body">
+      <div class="controls" style="margin-top:0;">
+        <div class="ctrl"><label>Number of features (n) <span class="val" id="dimNVal">2</span></label><input type="range" id="dimN" min="1" max="8" step="1" value="2"></div>
+        <div class="ctrl"><label>Number of samples (m) <span class="val" id="dimMVal">7</span></label><input type="range" id="dimM" min="2" max="50" step="1" value="7"></div>
+        <div class="ctrl">
+          <label>Orientation</label>
+          <select id="dimOrient">
+            <option value="sf">samples × features (MultipleRegression)</option>
+            <option value="fs">features × samples (MultiRegressionGeneral)</option>
+          </select>
+        </div>
+      </div>
+      <div id="dimVis" class="matrix-vis" style="margin-top:18px;"></div>
+      <div class="readout" id="dimReadout" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <h4>Why the same gradient-descent algorithm can work for any number of features</h4>
+  <p>Nothing about the update rule <code>θ ← θ − α·∇C(θ)</code> cares how many entries θ has. Whether θ = [m, b] (2 entries) or
+  θ = [w₁,...,wₙ,b] (n+1 entries), it's still "subtract a scaled gradient from a parameter vector." Stage 10 and 11 show exactly how the loop-based
+  version generalizes into this shape.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 9</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Feature, sample, target, weight, and bias as distinct roles.</li>
+          <li>Two valid but incompatible data orientations, and why transposition matters between them.</li>
+          <li>Why the parameter vector, not the algorithm, is what has to grow with more features.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Moving between <code>MultipleRegression</code> and <code>MultiRegressionGeneral</code> and expecting <code>self.data[i]</code> to mean the
+        same thing in both — it doesn't, and mixing them up would silently compute the wrong thing without erroring.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Explicitly writing out what a single row means in each class before touching the math — "row = one sample" vs. "row = one feature" — rather
+        than assuming a shared convention across files.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Given 3 samples and 2 features, write out the data array explicitly in both samples×features and features×samples form, and show that one
+        is exactly the transpose of the other.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>What is a "sample" versus a "feature"?</summary>
+      <div class="qa-answer">A sample is one complete data point — everything known about one tower. A feature is one specific measured quantity
+      (e.g. distance) that appears across every sample. A dataset of m towers each described by n numbers has m samples and n features.</div>
+    </details>
+    <details class="qa"><summary>Why does it matter whether data is stored as samples×features or features×samples?</summary>
+      <div class="qa-answer">The two layouts are transposes of each other, and matrix operations (like `data @ error`) give completely different,
+      dimensionally-incompatible or silently-wrong results if the code assumes the wrong one. Getting predictions and gradients right requires
+      knowing exactly which axis represents samples and which represents features.</div>
+    </details>
+    <details class="qa"><summary>Why doesn't gradient descent itself need to change when the number of features changes?</summary>
+      <div class="qa-answer">The update rule only operates on "the parameter vector" and "its gradient," treating both as generic vectors of whatever
+      length they happen to be. Adding features just makes those vectors longer — the subtraction and scaling logic is unchanged.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: with n features, per-point Python loops start to look expensive. What does the same math look like as matrix operations?</p>
+</section>
+<section class="stage" id="stage10">
+  <div class="stage-eyebrow"><span class="num">10</span>Stage 10 — Vectorization</div>
+  <h2 class="title">Every Python for-loop over samples is secretly a matrix operation waiting to happen</h2>
+  <p class="subtitle">What I knew before this stage: for-loops over towers compute the right numbers. What I didn't know: that the same numbers come out of a couple of matrix operations, much faster.</p>
+
+  <h4>Starting point — the loop-based cost</h4>
+  <pre class="code">def cost(self):
+    c = 0
+    for i in range(len(self.data)):
+        gather = 0
+        for j in range(len(self.param)-1):
+            gather += self.param[j]*self.data[i][j]
+        c += (gather + self.param[-1] - self.data[i][-1])**2
+    return c</pre>
+  <p>Two nested loops: the outer one walks samples, the inner one walks features within a sample, manually accumulating <code>gather = Σⱼ wⱼxᵢⱼ</code>
+  before adding the bias and squaring the error. Every single multiplication and addition here has a direct matrix-operation counterpart.</p>
+
+  <h4>The same calculation as matrix operations</h4>
+  <pre class="code">def cost(self):
+    prediction = (self.param[:-1, None] * self.data).sum(axis=0) + self.param[-1]
+    error = prediction - self.output
+    return np.sum(error**2)</pre>
+  <p>Reading this line by line, against the loop it replaces:</p>
+  <ul>
+    <li><code>self.param[:-1, None]</code> — reshapes the weight vector from shape (n,) to (n,1) so it can be broadcast against every sample's column
+    at once. This is <strong>broadcasting</strong>: NumPy stretches the (n,1) array across the sample axis without actually copying it n times.</li>
+    <li><code>self.param[:-1, None] * self.data</code> — an <strong>element-wise multiplication</strong> (not matrix multiplication): for a
+    features×samples-shaped <code>self.data</code>, this multiplies every feature's row by its own weight, for every sample simultaneously. This
+    replaces the inner loop's <code>self.param[j]*self.data[i][j]</code>, done for every (i,j) pair at once instead of one at a time.</li>
+    <li><code>.sum(axis=0)</code> — sums <em>down each column</em> (over the features axis, axis 0, in a features×samples array), collapsing n
+    feature-contributions into one prediction per sample. This is exactly the inner loop's <code>gather</code> accumulator, computed for every sample
+    in one call instead of looped.</li>
+    <li><code>+ self.param[-1]</code> — adds the bias to every sample's prediction at once (broadcasting a single scalar across the whole array).</li>
+    <li><code>error**2</code> then <code>np.sum(...)</code> — squares every residual element-wise, then adds them all up. This replaces the outer
+    loop's running total <code>c</code>.</li>
+  </ul>
+
+  <h4>The gradient — where @ (matrix multiplication / dot product) enters</h4>
+  <pre class="code">def gradient(self):
+    prediction = (self.param[:-1, None] * self.data).sum(axis=0) + self.param[-1]
+    error = prediction - self.output
+    grad_w = 2 * (self.data @ error)
+    grad_b = 2 * np.sum(error)
+    return np.append(grad_w,grad_b)</pre>
+  <p><code>self.data @ error</code> is a matrix-vector product. Because <code>self.data</code> is features×samples (shape (n, m)) and
+  <code>error</code> is (m,), the product has shape (n,) — one number per feature. What does that number mean? Row <code>j</code> of
+  <code>self.data</code> is feature j's value across every sample; taking its <strong>dot product</strong> with <code>error</code> computes exactly
+  <code>Σᵢ xⱼᵢ · errorᵢ</code> — which is precisely ∂C/∂wⱼ (up to the factor of 2), for every feature j, simultaneously. This single <code>@</code>
+  replaces an entire loop over both samples <em>and</em> features.</p>
+
+  <div class="callout">
+    <span class="tag">data @ error vs. data.T @ error — why the transpose flips depending on orientation</span>
+    <p style="margin:0;">This only comes out as <code>data @ error</code> (not <code>data.T @ error</code>) <em>because</em> <code>self.data</code> is
+    features×samples here (Stage 9). If <code>self.data</code> were instead samples×features (shape (m,n), one row per sample — like
+    <code>MultipleRegression</code>'s orientation), the matching operation would have to be <code>data.T @ error</code> instead, since you'd need to
+    transpose it first to get features back onto the rows before dotting each feature's column against the sample-indexed error vector. The correct
+    choice between <code>data @ error</code> and <code>data.T @ error</code> isn't arbitrary — it's forced by whichever orientation the data is
+    actually stored in.</p>
+  </div>
+
+  <h4>Vocabulary, tied directly to the code above</h4>
+  <ul>
+    <li><strong>Element-wise multiplication</strong> (<code>*</code>): multiplies matching positions independently; shapes must match or broadcast.</li>
+    <li><strong>Broadcasting:</strong> NumPy's rule for stretching smaller-shaped arrays across a larger one without copying data, e.g. turning a
+    (n,1) weight column into an effective (n,m) grid to multiply against (n,m) data.</li>
+    <li><strong>Matrix multiplication / dot product</strong> (<code>@</code>): sums products across a shared axis — turns "multiply then sum" (two
+    separate loop-conceptual steps) into a single operation.</li>
+    <li><strong><code>np.sum(..., axis=...)</code>:</strong> collapses one specific axis by summation; <code>axis=0</code> sums down columns,
+    <code>axis=1</code> sums across rows — getting this backwards silently produces a result with the wrong shape or the wrong meaning.</li>
+    <li><strong><code>@</code> vs. plain <code>np.sum</code>:</strong> <code>@</code> is "multiply corresponding entries, then sum" fused into one
+    call; when a computation is exactly of that shape, <code>@</code> replaces both a multiplication and a subsequent sum.</li>
+  </ul>
+
+  <h4>Why vectorization is faster</h4>
+  <p>The loop version pays Python's per-iteration overhead (bytecode dispatch, bounds checks, object creation for each intermediate float) once for
+  every single sample-feature pair. The vectorized version dispatches into NumPy's compiled C loops <em>once</em> for the whole array, regardless of
+  how many samples or features there are — the actual arithmetic is comparable, but the overhead around each individual operation collapses from
+  "once per number" to "once total." This is a big part of why the slow 1,000,000-iteration experiments in Stage 5 and Stage 13 were even feasible to
+  run at all once the code moved to this form.</p>
+
+  <h4>How the feature count generalizes for free</h4>
+  <p>Nothing above hard-codes "2 features." <code>self.param[:-1, None] * self.data</code> works whether <code>self.data</code> has 2 rows or 20 —
+  the shapes just have to agree. This is the concrete mechanism behind Stage 9's claim that the same algorithm handles any number of features: the
+  loop bounds that used to be explicit (<code>range(len(self.param)-1)</code>) are replaced by array shapes that NumPy checks automatically.</p>
+
+  <div class="widget">
+    <div class="widget-head"><span class="wt">Interactive · loop vs. vectorized, side by side</span></div>
+    <div class="widget-body">
+      <div id="vecTableWrap"></div>
+      <div class="controls">
+        <button class="btn secondary" id="vecPlayLoop">▶ Step through the loop</button>
+        <button class="btn" id="vecVectorize">⚡ Do it vectorized</button>
+        <button class="btn secondary" id="vecReset">Reset</button>
+      </div>
+      <div class="readout">Running total (Σ xᵢ·errorᵢ, i.e. half of grad_w): <b id="vecRunning">0.00</b></div>
+      <div class="legend">
+        <span><i style="background:var(--teal)"></i>currently processed by the loop</span>
+        <span><i style="background:var(--copper)"></i>processed simultaneously by @</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 10</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Every term in a vectorized formula traced back to the specific loop step it replaces.</li>
+          <li>Broadcasting as "implicit stretching," not literal copying.</li>
+          <li><code>axis=0</code> vs <code>axis=1</code>, and how <code>@</code> fuses multiply-then-sum.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Why <code>data @ error</code> was correct in one class but would have needed <code>.T</code> in the other — it looked like an arbitrary
+        detail until I connected it back to which axis was samples and which was features.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Working out the shapes explicitly on paper before trusting the code: (n,m) @ (m,) only works and only means the right thing if the m-axis
+        genuinely is the sample axis in that particular array.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For 2 features and 4 samples, write the nested-loop computation of <code>gather</code> for sample i=2 by hand, then show it equals the
+        i=2 entry of <code>(param[:-1,None]*data).sum(axis=0)</code> computed the vectorized way.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why does vectorization improve performance if the total number of multiplications is the same?</summary>
+      <div class="qa-answer">Because most of the cost in a Python loop isn't the arithmetic itself — it's the per-iteration interpreter overhead
+      (bytecode dispatch, temporary object creation, bounds checks). Vectorized NumPy operations do the same arithmetic inside compiled C loops with
+      that overhead paid once for the whole array, not once per element.</div>
+    </details>
+    <details class="qa"><summary>Why does data @ error need to become data.T @ error if the data orientation changes?</summary>
+      <div class="qa-answer">Matrix multiplication requires the inner dimensions to match up meaningfully — specifically, the axis being summed over
+      must be the sample axis. If data switches from features×samples to samples×features, the sample axis moves from columns to rows, so a
+      transpose is needed to put the sample axis back where the multiplication expects it.</div>
+    </details>
+    <details class="qa"><summary>What does axis=0 mean when calling .sum(axis=0) on a features×samples array?</summary>
+      <div class="qa-answer">It sums down each column — i.e., across the rows, which are the features in this orientation — collapsing all feature
+      contributions into a single value per sample (per column).</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: with vectorized operations and n features in hand, what does the fully general implementation look like?</p>
+</section>
+<section class="stage" id="stage11">
+  <div class="stage-eyebrow"><span class="num">11</span>Stage 11 — Generalized multiple regression</div>
+  <h2 class="title">From hard-coded w1, w2, b to a parameter vector of any length</h2>
+  <p class="subtitle">What I knew before this stage: two named weights plus a bias, written by hand. What I didn't know: how to stop hard-coding the parameter count entirely.</p>
+
+  <h4>Where I started — named parameters</h4>
+  <pre class="code">w1,w2,b = symbols('w1 w2 b')
+param = [w1,w2,b]</pre>
+  <p><code>MultipleRegression</code> works, but every one of its three parameters exists because I typed its name. Adding a third feature would mean
+  editing the class by hand — adding a <code>w3</code> symbol, extending the inner loop's range, and so on. That's fine for exploring the idea with 2
+  features, but it isn't a <em>general</em> implementation yet — it's a specific one that happens to have 2 features baked in structurally (even
+  though the loop itself, <code>for j in range(len(self.param)-1)</code>, was already written generically).</p>
+
+  <h4>Where I ended up — an arbitrary-length parameter vector</h4>
+  <pre class="code">class MultiRegressionGeneral:
+    def __init__(self,data,output,param):
+        self.data = np.asarray(data, dtype=float)
+        self.output = np.asarray(output, dtype=float)
+        self.param = np.asarray(param, dtype=float)</pre>
+  <p><code>param</code> is no longer a hand-written list of named SymPy symbols — it's a plain NumPy array, and nothing in the class cares how long it
+  is. The transition looks like this:</p>
+  <div class="formula"><span class="lbl">Named, fixed-size</span>[w1, w2, b]&nbsp;&nbsp;&nbsp;&mdash; exactly 3 entries, by construction</div>
+  <div class="formula"><span class="lbl">Generalized</span>[w1, w2, ..., wₙ, b]&nbsp;&nbsp;&nbsp;&mdash; n+1 entries, n decided at call time</div>
+  <p>This is visible directly in how differently the class gets used across two experiments in the same notebook. First, with 2 features:</p>
+  <pre class="code">data = [distance, price]
+param = np.array([2,3,4],dtype=float)
+m = MultiRegressionGeneral(data,output,param)</pre>
+  <p>Then, without a single change to the class itself, with 5 features:</p>
+  <pre class="code">data = [distance, price, area, age, rooms]
+output = 2*distance + 3*price + 0.5*area - 4*age + 10*rooms + 20
+param = np.zeros(6)   <span class="c"># 5 weights + 1 bias — the "6" is the only thing that changed</span>
+m2 = MultiRegressionGeneral(data,output,param)</pre>
+  <p>The only number that changed between a 2-feature and a 5-feature regression is the length of <code>param</code> (and, correspondingly, the
+  number of rows in <code>data</code>). No method inside the class needed editing.</p>
+
+  <h4>Why the same gradient-descent algorithm still works</h4>
+  <p>Trace it through: <code>self.param[:-1, None] * self.data</code> broadcasts across however many feature-rows exist; <code>.sum(axis=0)</code>
+  collapses however many there are; <code>self.data @ error</code> produces a gradient vector exactly as long as the number of feature-rows in
+  <code>self.data</code>. Every shape in the computation is <em>derived</em> from the shapes of <code>self.data</code> and <code>self.param</code>,
+  never hard-coded — which is precisely what makes "generalized" true in a structural sense, not just in the sense of "happens to work for the
+  numbers I tried."</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 11</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>The difference between code that "works for n=2" and code that is structurally general in n.</li>
+          <li>How array shapes, not explicit loop bounds, are what make NumPy code generalize automatically.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Whether "generalizing" the class meant rewriting the math — it didn't. The math (sum of squared errors, its gradient) was identical; only
+        the data structures needed to stop assuming a fixed count.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Seeing that going from 2 features to 5 required changing exactly one number (<code>np.zeros(6)</code> instead of
+        <code>np.array([2,3,4])</code>) and the shape of the input data — nothing inside <code>MultiRegressionGeneral</code> itself.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Without changing any method body, describe exactly what two things would need to be passed differently to run
+        <code>MultiRegressionGeneral</code> on a dataset with 10 features instead of 5.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>What concretely changed between the 2-feature and 5-feature experiments in MultiRegressionGeneral?</summary>
+      <div class="qa-answer">Only the data passed in (how many feature arrays are in the `data` list) and the length of the initial `param` array
+      (`np.zeros(6)` instead of a 3-element array). No method inside the class was modified.</div>
+    </details>
+    <details class="qa"><summary>Why is the earlier MultipleRegression class less "general" even though its inner loop already used range(len(self.param)-1)?</summary>
+      <div class="qa-answer">Because its parameters were still individually declared, named SymPy symbols (`w1,w2,b`) constructed by hand for a specific
+      count — adding a feature meant editing the source to add another symbol, even if the loop body itself didn't need to change.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: a general implementation is only useful if I can trust it. How did I actually verify it was correct?</p>
+</section>
+<section class="stage" id="stage12">
+  <div class="stage-eyebrow"><span class="num">12</span>Stage 12 — Testing the implementation</div>
+  <h2 class="title">If I already know the answer, my optimizer had better find it</h2>
+  <p class="subtitle">What I knew before this stage: the code runs without crashing. What I didn't know: whether it's actually computing the right thing.</p>
+
+  <h4>The debugging trick — generate data from a known equation</h4>
+  <p>A regression implementation can run cleanly, produce plausible-looking numbers, and still be subtly wrong — the one_tower gradient bug in Stage 4
+  proved that. The fix I used throughout <code>multiple_regression.ipynb</code>: instead of using real, noisy, unknown data, generate data
+  <em>from</em> a known formula, and check whether the optimizer can find that exact formula back out.</p>
+  <pre class="code">def cost(x1,x2):
+    return 2*x1 + 3*x2 + 4
+
+data = [[1,2,0],[1,3,0],[3,7,0],[6,4,0],[4,9,0],[10,2,0],[12,15,0]]
+for i in range(len(data)):
+    data[i][2] = cost(data[i][0],data[i][1])   <span class="c"># fill in y using the KNOWN true formula</span></pre>
+  <p>Every target value here comes from a formula I chose myself: <code>y = 2x₁ + 3x₂ + 4</code>. So the "correct" parameters are known in advance to
+  be exactly <code>[2, 3, 4]</code> — I'm not hoping the optimizer finds a good fit, I'm checking whether it finds <em>the</em> fit I built the data
+  to have.</p>
+
+  <h4>Known parameters → generate y → initialize wrong → optimize → compare</h4>
+  <pre class="code">opt = np.array([0,0,0],dtype=float)   <span class="c"># deliberately wrong: nowhere near [2,3,4]</span>
+m.gradient_descent(opt,0.001,10000)</pre>
+  <div class="output-block">[3.24  3.808 0.456]
+[2.27872  2.769408 0.345984]
+[2.50988173 3.0958569  0.39588467]
+...</div>
+  <p>Starting from <code>[0,0,0]</code>, gradient descent visibly drifts toward the true <code>[2,3,4]</code> — the sequence of printed vectors is
+  the tell: if the implementation were wrong, it would converge to <em>some other</em> triplet, or not converge at all, or (as in Stage 5's oscillation
+  and divergence experiments) never settle down. Newton's method, tested the same way, jumps straight to <code>[2. 3. 4.]</code> on the very first
+  iteration — independent confirmation from a completely different method, which matters, since if both a slow iterative method and an exact one-step
+  method agree on the same answer, that's much stronger evidence than either alone.</p>
+  <p>This exact same test was repeated at larger scale with <code>MultiRegressionGeneral</code>: a known formula
+  <code>cost(x1,x2) = 2·x1 + 3·x2 + 4</code>, applied to 11 synthetic distance/price samples, recovered as
+  <code>array([2.00000007, 3.00000004, 3.99999839])</code> after 200,000 iterations — accurate to about 6 decimal places, which is exactly what I'd
+  expect from a converging-but-not-yet-perfectly-converged iterative method.</p>
+
+  <h4>The stronger verification: correct parameters ⇒ cost = 0 and gradient = 0</h4>
+  <p>Recovering approximately the right answer after optimizing is good evidence, but there's a sharper, more direct test that doesn't even require
+  running the optimizer: if the parameters are exactly right, the cost function should evaluate to exactly zero (every prediction matches every
+  target exactly), and the gradient should evaluate to exactly the zero vector (there's no downhill direction left, because you're already at the
+  minimum). I checked both, directly:</p>
+  <pre class="code">print("Current:")
+print(m2.param)
+print("Cost:", m2.cost())
+print("Gradient:", m2.gradient())
+
+true_param2 = np.array([2., 3., 0.5, -4., 10., 20.])
+m2.param = true_param2
+
+print("\nTrue parameters:")
+print(m2.param)
+print("Cost:", m2.cost())
+print("Gradient:", m2.gradient())</pre>
+  <div class="output-block">Current:
+[ 0.05412667  2.95246272  0.88207614 -4.07354718  0.77780909  0.15921005]
+Cost: 48.75659998513062
+Gradient: [-0.16153722 -0.25153687  0.16359338 -0.3681324  -5.64263654 -2.27107187]
+
+True parameters:
+[ 2.   3.   0.5 -4.  10.  20. ]
+Cost: 0.0
+Gradient: [0. 0. 0. 0. 0. 0.]</div>
+  <p>This is exactly the confirmation I wanted: plugging in parameters that hadn't yet converged gives a non-zero cost and a non-zero gradient — there's
+  still room to improve, and the gradient correctly points toward that room. Plugging in the exact known true parameters gives cost <strong>exactly</strong>
+  0.0 and gradient <strong>exactly</strong> the zero vector, with no rounding residue at all. That's strong evidence the cost and gradient formulas are
+  mathematically consistent with each other — the gradient really is the derivative of the cost I implemented, not a plausible-looking but subtly
+  disconnected formula.</p>
+
+  <h4>Why this kind of test matters more than it looks like it does</h4>
+  <p>It's tempting to trust code because it runs and produces numbers in a reasonable range — the Stage 4 gradient bug did exactly that. A synthetic
+  test with a known answer converts "does this look plausible?" into "does this match a number I can check exactly?" — turning debugging from
+  inspection into verification.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 12</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Why synthetic data with a known generating formula is a stronger test than real, unlabeled data.</li>
+          <li>Why cost=0 and gradient=0 at the true parameters is a sharper check than "converged to approximately the right answer."</li>
+          <li>Why agreement between two independent methods (gradient descent and Newton) is stronger evidence than either alone.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Early on I judged correctness mostly by whether numbers "looked reasonable" — which is exactly the standard the Stage 4 bug slipped past.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Deliberately constructing a case where I already knew the exact right answer, so "close to right" versus "exactly right" became something I
+        could actually check numerically instead of eyeballing.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>Explain, in one or two sentences, why C(θ) = 0 at θ = true parameters necessarily implies ∇C(θ) = 0 there too, for a sum-of-squared-errors
+        cost specifically (hint: think about what each squared term, and its derivative, must individually be at that point).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why is testing with synthetic, known-formula data more useful for debugging than testing with real data?</summary>
+      <div class="qa-answer">With synthetic data you know the exact correct parameters in advance, so you can check whether the optimizer converges
+      to precisely that answer. With real data you never know the true underlying relationship (if one even exists), so you can't distinguish
+      "the implementation is correct but the data is noisy" from "the implementation has a bug."</div>
+    </details>
+    <details class="qa"><summary>Why does plugging in the true parameters and getting gradient = 0 exactly (not approximately) matter?</summary>
+      <div class="qa-answer">It confirms the gradient formula implemented is mathematically the true derivative of the cost formula implemented — if
+      they were inconsistent (e.g. one had a bug like the Stage 4 unsummed gradient), evaluating at the exact minimum of the cost would generally
+      NOT produce a zero gradient, since a wrong gradient formula has no reason to vanish at the true cost minimum.</div>
+    </details>
+    <details class="qa"><summary>Why is it stronger evidence that both gradient descent and Newton's method converge to the same [2,3,4]?</summary>
+      <div class="qa-answer">The two methods are implemented differently and use different information (first-order vs. second-order). If there were a
+      bug specific to one implementation, it would likely produce a different wrong answer than the other — so independent agreement between them
+      makes a shared implementation bug much less likely.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: the implementation is verified correct. So why did it get so slow on realistic, differently-scaled features?</p>
+</section>
+<section class="stage" id="stage13">
+  <div class="stage-eyebrow"><span class="num">13</span>Stage 13 — Why it got slow</div>
+  <h2 class="title">One learning rate, two very different curvatures</h2>
+  <p class="subtitle">What I knew before this stage: gradient descent can oscillate, diverge, or crawl. What I didn't know: why the exact same algorithm could be both too aggressive and too timid on the exact same run.</p>
+
+  <h4>Coming back to the experiment that didn't add up</h4>
+  <p>Stage 5 ended with an experiment I described but didn't explain: 1000 towers, x-values scaled up to 500, a learning rate shrunk all the way to
+  <code>1e-8</code> just to keep things stable, run for <strong>1,000,000 iterations</strong> — and <code>b</code> was still creeping toward its true
+  value at roughly +0.00004 per 100 iterations at the end. Nothing about that run was broken. Every single update was a legitimate step downhill.
+  It was just almost unusably slow. That's a different failure mode from oscillation or divergence, and it deserves its own explanation.</p>
+
+  <h4>Revisiting the per-parameter curvature from Stage 8</h4>
+  <p>Stage 8 already derived the exact Hessian for this cost function, without naming why it mattered yet:</p>
+  <div class="formula"><span class="lbl">Hessian, from Stage 8</span>H = [ 2Σxᵢ² &nbsp; 2Σxᵢ ; &nbsp; 2Σxᵢ &nbsp; 2n ]</div>
+  <p>The diagonal entries are the closest thing to "curvature along m alone" and "curvature along b alone": roughly <code>k_m ≈ 2Σxᵢ²</code> and
+  <code>k_b ≈ 2n</code> (this is an approximation — the true axes of the bowl are rotated whenever Σxᵢ ≠ 0, but it's close enough to see the point).
+  Stage 5's own derivation already showed that gradient descent's stability condition is <code>|1 − α·k| &lt; 1</code>, i.e. roughly
+  <code>0 &lt; α &lt; 2/k</code>, for whichever curvature <code>k</code> is in play.</p>
+
+  <h4>Why one α can't serve both parameters at once</h4>
+  <p>Plug in the 1000-tower experiment's shape: with x-values up to 500, <code>Σxᵢ²</code> is enormous — on the order of tens of millions — so
+  <code>k_m</code> is huge, and the stable range for updating <code>m</code> alone is a razor-thin <code>0 &lt; α &lt; 2/k_m</code>, forcing α down
+  into the <code>1e-8</code> territory just to avoid the divergence pattern from Stage 5. But <code>k_b = 2n = 2000</code> is comparatively tiny —
+  the stable range for updating <code>b</code> alone would happily allow an α many orders of magnitude larger. Gradient descent only has one α to
+  share between both updates. Set small enough to keep <code>m</code> stable, that same α makes every single <code>b</code>-update absurdly small
+  too — even though <code>b</code> itself would have been perfectly happy converging fast. The whole optimization is throttled to the pace of its
+  worst-conditioned direction.</p>
+
+  <div class="callout">
+    <span class="tag">The general name for this</span>
+    <p style="margin:0;">This ratio — <code>k_m / k_b</code>, the largest curvature divided by the smallest — is what's usually called the
+    <strong>condition number</strong> of the problem. A well-conditioned bowl (all curvatures similar) lets gradient descent converge quickly with a
+    single, reasonably large α. A badly-conditioned bowl — exactly what happens whenever raw feature values sit on very different scales, like
+    "x up to 500" versus "a bias that only needs to move by single digits" — forces gradient descent into the trap above: too slow everywhere, or
+    unstable somewhere.</p>
+  </div>
+
+  <h4>Why Newton's method never had this problem</h4>
+  <p>This is the payoff of Stage 8's <code>H⁻¹∇C</code> update, stated plainly: multiplying by the inverse Hessian rescales <em>each direction by its
+  own curvature</em> before stepping. A huge <code>k_m</code> and a tiny <code>k_b</code> get corrected for automatically and separately — Newton's
+  method doesn't share one global step size across mismatched directions the way gradient descent's scalar α does. That's precisely why Newton
+  converged in a single step regardless of how the 5-tower or 1000-tower data happened to be scaled, while gradient descent's single α had to
+  compromise between them.</p>
+
+  <h4>The standard fix I didn't implement: feature scaling</h4>
+  <div class="callout">
+    <span class="tag">Extension / next concept — not in my notebooks</span>
+    <p style="margin:0;">The conventional response to this exact problem is <strong>feature scaling</strong> (also called normalization or
+    standardization): rescale every feature before optimizing, typically by subtracting its mean and dividing by its standard deviation, so every
+    feature sits on a comparable numeric scale before gradient descent ever sees it. That doesn't change the underlying relationship being learned —
+    it changes the shape of the cost surface so its curvature is roughly the same in every direction, which is exactly what makes a single, larger,
+    stable α possible again. None of my notebooks implement this; the 1000-tower experiment is a direct, lived demonstration of the exact problem
+    feature scaling exists to solve, discovered the hard way rather than avoided in advance.</p>
+  </div>
+
+  <h4>The other way out: not iterating at all</h4>
+  <p>There's a second, completely different escape from this whole problem, and I'd already built half of it without naming it: the hero widget's
+  "Snap to best fit" button doesn't run gradient descent — it solves for the minimizing (m,b) directly, algebraically, using the same closed-form
+  <strong>normal equations</strong> that make ordinary least-squares a solved problem: θ = (XᵀX)⁻¹Xᵀy. This is the same underlying idea as Newton's
+  method — using the known, constant Hessian to jump straight to the answer — just phrased as "solve a linear system" instead of "take one
+  optimizer step." It sidesteps learning rates and condition numbers entirely, at the cost of an explicit matrix inversion that gets expensive once
+  the number of features grows large — which is exactly why iterative methods like gradient descent remain the practical choice once n is large,
+  even though they're the ones sensitive to conditioning.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 13</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>Per-parameter curvature, and why a shared learning rate has to compromise between them.</li>
+          <li>Condition number as "ratio of worst to best curvature," and why large feature scales worsen it.</li>
+          <li>Why Newton's per-direction rescaling makes it immune to a problem gradient descent can't escape.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>I initially read the slow 1000-tower run as "gradient descent is just intrinsically slow," rather than as a symptom of a specific,
+        fixable mismatch between how <code>m</code> and <code>b</code> individually respond to updates.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Going back to the Hessian I'd already derived in Stage 8 for an unrelated reason (one-step Newton convergence) and realizing its diagonal
+        entries were the missing explanation the whole time — I had the tool before I knew I needed it.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For a toy 1-feature dataset where x ranges up to 1000 instead of up to 10, estimate how much smaller the stable learning rate for m has
+        to become compared to the 5-tower dataset, using k_m ≈ 2Σxᵢ². (Hint: curvature scales with x², so a 100× larger x range means roughly a
+        10,000× larger k_m, and therefore a roughly 10,000× smaller safe α.)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>Why does a single learning rate struggle when features are on very different scales?</summary>
+      <div class="qa-answer">Each parameter has its own effective curvature (from the Hessian), and gradient descent's stability condition
+      |1−αk|&lt;1 depends on that curvature. A learning rate small enough to stay stable for a high-curvature parameter (large feature scale) is
+      far smaller than necessary for a low-curvature parameter, so the low-curvature parameter is forced to converge unnecessarily slowly.</div>
+    </details>
+    <details class="qa"><summary>What is the "condition number" of an optimization problem, informally?</summary>
+      <div class="qa-answer">Roughly, the ratio between the largest and smallest curvature across all parameter directions. A high condition number
+      means some directions are much more sensitive to step size than others, which is exactly what makes a single shared learning rate hard to
+      choose well.</div>
+    </details>
+    <details class="qa"><summary>Why doesn't Newton's method suffer from poor conditioning the way gradient descent does?</summary>
+      <div class="qa-answer">Newton's update multiplies the gradient by the inverse Hessian, which rescales every direction by its own individual
+      curvature before stepping. Gradient descent instead scales every direction by the same single α, so it has no way to compensate when
+      different directions need very different effective step sizes.</div>
+    </details>
+    <details class="qa"><summary>Besides feature scaling, what's a completely different way to sidestep the condition-number problem for linear regression specifically?</summary>
+      <div class="qa-answer">Solve for the parameters directly with the closed-form normal equations, θ = (XᵀX)⁻¹Xᵀy, rather than iterating at all.
+      Since this uses the exact (constant) curvature information directly, like Newton's method, it has no learning rate and no conditioning
+      problem — though it requires a matrix inversion that becomes expensive as the number of features grows.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Next: this whole shape — model, cost, gradient, optimizer — didn't stop existing once the towers were solved. Where does it show up next?</p>
+</section>
+<section class="stage" id="stage14">
+  <div class="stage-eyebrow"><span class="num">14</span>Stage 14 — The bigger picture</div>
+  <h2 class="title">The same four-part skeleton, wearing different clothes</h2>
+  <p class="subtitle">What I knew before this stage: how to fit a line, and then a hyperplane, to towers. What I didn't know: that I'd just built the actual skeleton underneath most of modern machine learning.</p>
+
+  <h4>Naming the skeleton explicitly</h4>
+  <p>Strip away everything specific to towers and every stage of this journey reduces to the same four-part shape, repeated with different
+  specifics each time:</p>
+  <ol>
+    <li><strong>A model</strong> — a hypothesis with adjustable parameters, mapping inputs to a prediction. Mine was ŷ = w·x + b.</li>
+    <li><strong>A cost</strong> — a single number, computed from the parameters and the data, that gets smaller as predictions get better.
+    Mine was Σ(ŷᵢ − yᵢ)².</li>
+    <li><strong>A gradient</strong> — the cost's sensitivity to each parameter, telling me which way is downhill.</li>
+    <li><strong>An optimizer</strong> — a rule for using the gradient (and sometimes curvature) to actually update the parameters, repeatedly,
+    until the cost stops improving.</li>
+  </ol>
+  <p>Nothing about this shape is specific to lines, towers, or even regression. It's the shape of "learning parameters from data" in general.</p>
+
+  <h4>Swap the model → logistic regression</h4>
+  <p>Wrap the same linear combination <code>w·x + b</code> in a sigmoid function to squash it into (0,1), and the model becomes a probability
+  instead of a raw number — the beginning of classification instead of regression. The cost usually changes too (cross-entropy instead of squared
+  error, because squared error stops being the "right" measure of badness once predictions are probabilities), but the gradient is still found by
+  differentiating that cost with respect to the parameters, and the optimizer is still gradient descent (or Newton, or a variant) updating
+  parameters by a scaled gradient. Nothing structurally new — a different model, a matching cost, the same machinery.</p>
+
+  <h4>Swap the model → a neural network</h4>
+  <p>Stack several of these linear-combination-plus-nonlinearity units in layers, feeding one layer's output into the next layer's input, and the
+  "model" becomes a neural network. The cost is still a single number measuring prediction badness. The gradient is still needed for every
+  parameter — except now there are potentially millions of them, spread across many layers, and computing ∂C/∂(each weight) by hand the way Stage 4
+  did for m and b would be hopeless. <strong>Backpropagation</strong> is the name for doing exactly that differentiation efficiently, by repeatedly
+  applying the chain rule backward through the layers — which is the same chain rule Stage 4 used to differentiate a sum of squares, just applied
+  through a much deeper composition of functions instead of one.</p>
+
+  <h4>Swap the optimizer → momentum and Adam</h4>
+  <p>Stage 5 and Stage 13 both surfaced the same weakness in plain gradient descent: a single global learning rate is either unstable in
+  high-curvature directions or too slow in low-curvature ones. Rather than fixing this by rescaling features, a whole family of optimizers fixes it
+  by making the update rule itself smarter — <strong>momentum</strong> accumulates a running average of past gradients so the walk builds speed
+  through consistently-downhill directions and damps oscillation in noisy ones; <strong>Adam</strong> additionally tracks a per-parameter estimate
+  of gradient magnitude and effectively gives each parameter its own adaptive learning rate — a softer, cheaper cousin of what Newton's method does
+  exactly with the full Hessian. Both are still, at their core, "use the gradient to decide how to update the parameters" — just with a more
+  sophisticated rule than "subtract α times the gradient."</p>
+
+  <h4>Add a term to the cost → regularization</h4>
+  <p>Nothing stops the cost function from being more than just squared error. Adding a penalty term like <code>λΣwⱼ²</code> (ridge regression) or
+  <code>λΣ|wⱼ|</code> (lasso) discourages weights from growing arbitrarily large, which helps prevent a model from fitting noise in the training
+  data too closely. The mechanical impact on everything built in this journey is small and direct: the new cost still needs a gradient, and since
+  differentiation distributes over addition, the penalty term just contributes an extra <code>2λwⱼ</code> (or similar) added onto the gradient
+  Stage 4 already derived — the optimizer loop itself doesn't change at all.</p>
+
+  <h4>Swap "all the data every step" → stochastic / mini-batch gradient descent</h4>
+  <p>Every gradient in this journey was computed using the entire dataset at once — Stage 10's vectorized <code>data @ error</code> sums over every
+  sample simultaneously. That's fine for 5 or even 1000 towers, but for datasets with millions of samples, computing one exact gradient before
+  taking a single step becomes itself the bottleneck. Stochastic and mini-batch gradient descent compute an approximate gradient from a small
+  random subset of the data each step instead — noisier, but far cheaper per step, and correct on average. This is a direct extension of exactly
+  the vectorized sum from Stage 10, just applied to a subset of rows instead of all of them.</p>
+
+  <h4>What this journey actually was</h4>
+  <p>None of these are new ideas layered on top of what came before — they're the same four-part skeleton (model, cost, gradient, optimizer) with
+  one part swapped at a time. Learning that skeleton on the smallest possible example — five towers and a straight line — is what makes it
+  recognizable everywhere else it shows up.</p>
+
+  <div class="learned-box">
+    <div class="lb-head">What I actually learned — Stage 14</div>
+    <div class="learned-grid">
+      <div class="learned-cell">
+        <h5>Concepts I can now explain</h5>
+        <ul>
+          <li>The model / cost / gradient / optimizer skeleton as the reusable shape underneath very different-looking ML methods.</li>
+          <li>Backpropagation as the chain rule from Stage 4, applied through many layers instead of one expression.</li>
+          <li>Regularization, momentum/Adam, and mini-batching as targeted swaps of one part of the skeleton, not new machinery.</li>
+        </ul>
+      </div>
+      <div class="learned-cell">
+        <h5>What confused me</h5>
+        <p>Before this journey, "logistic regression," "neural network," and "gradient descent optimizer" felt like three separate, unrelated
+        topics to memorize independently.</p>
+      </div>
+      <div class="learned-cell">
+        <h5>What resolved it</h5>
+        <p>Building the skeleton once, from scratch, on towers — with my own bugs and my own fixes — made it possible to see it again immediately
+        underneath each of these, instead of having to relearn a new-looking pipeline from zero every time.</p>
+      </div>
+      <div class="learned-cell derive-test">
+        <h5>Can I derive it myself?</h5>
+        <p>For ridge regression's penalized cost C(θ) = Σ(ŷᵢ−yᵢ)² + λΣⱼwⱼ², derive ∂C/∂wⱼ by differentiating each term separately, and confirm it's
+        exactly the ordinary least-squares gradient from Stage 10 plus one new, simple term.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="recall">
+    <span class="rc-label">Active recall</span>
+    <details class="qa"><summary>What are the four parts of the "skeleton" this whole journey built?</summary>
+      <div class="qa-answer">A model (parameterized hypothesis mapping inputs to predictions), a cost (a single number measuring how bad the
+      predictions are), a gradient (the cost's sensitivity to each parameter), and an optimizer (a rule for using the gradient to update the
+      parameters until the cost stops improving).</div>
+    </details>
+    <details class="qa"><summary>In what sense is backpropagation "the same" as the derivative work in Stage 4?</summary>
+      <div class="qa-answer">Both use the chain rule to compute how the cost changes with respect to each parameter. Stage 4 applied it to one
+      composed expression (a squared linear residual); backpropagation applies the same rule repeatedly, layer by layer, through a much deeper
+      composition of functions — the underlying calculus operation is identical.</div>
+    </details>
+    <details class="qa"><summary>Why doesn't adding a regularization term require rebuilding the optimizer?</summary>
+      <div class="qa-answer">Because differentiation distributes over addition: the gradient of (original cost + penalty term) is just (original
+      gradient) + (penalty's gradient). The optimizer still only needs "a gradient" to do its update — it doesn't care which cost function that
+      gradient came from.</div>
+    </details>
+  </div>
+
+  <p style="margin-top:30px; color:var(--ink-faint); font-size:13.5px;">→ Last: if I strip away every notebook, every bug, and every stage number, what's the one mental model I actually want to keep?</p>
+</section>
+<section class="stage" id="stage15">
+  <div class="stage-eyebrow"><span class="num">15</span>Stage 15 — Mental model</div>
+  <h2 class="title">The whole journey, compressed back down to one sentence per stage</h2>
+  <p class="subtitle">The central question from the top of this page, answered end to end.</p>
+
+  <div class="central-q" style="margin-bottom:30px;">
+    "I had towers with coordinates and no idea how to relate them — how did that turn into a general parameter-optimization system I built myself?"
+    Because every stage below forced the next one to exist. Nothing here was reached for in advance; each concept became necessary only once the
+    previous one ran out of room.
+  </div>
+
+  <h4>The chain, compressed</h4>
+  <ol>
+    <li><strong>A vague real-world problem</strong> only becomes solvable once it's translated into coordinates — and even then, my own problem
+    statement and my own code quietly solved two different (both valid) problems.</li>
+    <li><strong>The simplest relationship</strong> between coordinates worth proposing is a line, y = mx + b — two parameters, easy to reason about,
+    almost never a perfect fit.</li>
+    <li><strong>"Almost never a perfect fit"</strong> demands a number for badness — residual, then squared error, then total cost — precise enough
+    to compare any two candidate lines.</li>
+    <li><strong>A cost that depends on two parameters</strong> is really a surface, not a curve — and "best line" means the lowest point of that
+    surface, which only has one answer once there's enough data to fully determine both parameters.</li>
+    <li><strong>Finding the bottom of a surface</strong> without checking every point by hand requires differentiation — the gradient, pointing
+    uphill, and its negative, pointing down.</li>
+    <li><strong>Walking downhill repeatedly</strong> is gradient descent — and getting the step size wrong doesn't just slow it down, it can make it
+    oscillate forever or blow up to infinity, depending on exactly how wrong.</li>
+    <li><strong>Watching numbers scroll by</strong> isn't understanding — recording every step's parameters (carefully, respecting the difference
+    between rebinding and mutating) turns a sequence of numbers into a video of a line visibly walking toward the data.</li>
+    <li><strong>Differentiating symbolically every single iteration</strong> is correct but wasteful — compiling the derivative once (lambdify), and
+    eventually writing the known closed-form gradient directly, removes that waste entirely.</li>
+    <li><strong>Slope alone tells you which way</strong>, but curvature (the Hessian) tells you how far — and for a cost this well-behaved (exactly
+    quadratic), curvature-aware Newton's method reaches the exact answer in a single step.</li>
+    <li><strong>One input number stops being enough</strong> the moment towers (or anything) are described by more than one measurement — the model
+    grows from y = mx + b to ŷ = w₁x₁ + ... + wₙxₙ + b, with no new ideas, just more parameters.</li>
+    <li><strong>More parameters means more loops</strong> — until every one of those loops is recognized as a matrix operation in disguise:
+    broadcasting, element-wise products, axis-sums, and dot products, all faster and all exactly equivalent to the loop they replace.</li>
+    <li><strong>A class that "works for 2 features"</strong> isn't the same as a class that's actually general in the number of features — that
+    only happens once every shape in the computation is derived from data, not hard-coded.</li>
+    <li><strong>Code that runs isn't code that's correct</strong> — the sharpest test available is synthetic data with a known answer, checked two
+    ways: does the optimizer converge to it, and does cost/gradient evaluate to exactly zero at the true parameters?</li>
+    <li><strong>A working, verified optimizer can still be painfully slow</strong> — because one learning rate has to serve every parameter, and
+    parameters with very different curvature (often from features on very different scales) can't all be served well by the same number.</li>
+    <li><strong>None of this was really about towers</strong> — model, cost, gradient, optimizer is the same skeleton underneath logistic
+    regression, neural networks, regularization, and modern optimizers; only the specific pieces change.</li>
+  </ol>
+
+  <h4>If I forget every notebook, this is what I want to still know</h4>
+  <div class="callout fixed">
+    <span class="tag">The one-paragraph version</span>
+    <p style="margin:0;">Turn a problem into numbers. Propose a simple relationship between them, with parameters you don't yet know. Define a
+    single number that measures how wrong those parameters currently are. Use calculus to find which way to nudge each parameter to make that
+    number smaller — and, if you can afford it, how far to nudge it. Repeat until nudging stops helping. Check your work against a case where you
+    already know the right answer. Then watch that exact same shape reappear, with different labels, almost everywhere else in machine learning.</p>
+  </div>
+
+  <p style="margin-top:24px; color:var(--ink-faint); font-size:13.5px;">
+    Back to the beginning: the hero widget at the top of this page is still just five towers and one line. Everything between here and there is the
+    answer to "why did that ever need to become more complicated than dragging two sliders?"
+  </p>
+</section>
+</div>
+
+<footer class="endnote">
+  reconstructed from regression_one_tower_problem.ipynb · regression_multi_tower_problem.ipynb · linear_regression.ipynb ·
+  optimization_using_newton_method.ipynb · multiple_regression.ipynb — mistakes included on purpose
+</footer>
+</main>
+</div>
+
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     Shared data + math helpers
+     ============================================================ */
+  var TX = [2,4,6,8,9];
+  var TY = [3,6,8,2,5];
+
+  function costAt(m,b,xs,ys){
+    var c = 0;
+    for(var i=0;i<xs.length;i++){
+      var r = m*xs[i]+b-ys[i];
+      c += r*r;
+    }
+    return c;
+  }
+  function gradAt(m,b,xs,ys){
+    var dm=0, db=0;
+    for(var i=0;i<xs.length;i++){
+      var r = m*xs[i]+b-ys[i];
+      dm += 2*r*xs[i];
+      db += 2*r;
+    }
+    return [dm,db];
+  }
+  function olsBestFit(xs,ys){
+    var n = xs.length, sx=0,sy=0,sxy=0,sxx=0;
+    for(var i=0;i<n;i++){ sx+=xs[i]; sy+=ys[i]; sxy+=xs[i]*ys[i]; sxx+=xs[i]*xs[i]; }
+    var m = (n*sxy - sx*sy) / (n*sxx - sx*sx);
+    var b = (sy - m*sx)/n;
+    return [m,b];
+  }
+  function getCss(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+  function invert2x2(H){
+    var a=H[0][0], b=H[0][1], c=H[1][0], d=H[1][1];
+    var det = a*d-b*c;
+    return [[d/det, -b/det],[-c/det, a/det]];
+  }
+
+  /* ============================================================
+     Sidebar toggle + scrollspy
+     ============================================================ */
+  var sidebar = document.getElementById('sidebar');
+  var sidebarToggle = document.getElementById('sidebarToggle');
+  if(sidebarToggle && sidebar){
+    sidebarToggle.addEventListener('click', function(){ sidebar.classList.toggle('open'); });
+  }
+  var navLinksAll = Array.prototype.slice.call(document.querySelectorAll('.navlist a'));
+  navLinksAll.forEach(function(a){
+    a.addEventListener('click', function(){ if(sidebar) sidebar.classList.remove('open'); });
+  });
+
+  var stageSections = Array.prototype.slice.call(document.querySelectorAll('section.stage'));
+  function linkForId(id){
+    return navLinksAll.filter(function(a){ return a.getAttribute('href') === '#'+id; })[0];
+  }
+  if('IntersectionObserver' in window && stageSections.length){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          navLinksAll.forEach(function(a){ a.classList.remove('active'); });
+          var link = linkForId(entry.target.id);
+          if(link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+    stageSections.forEach(function(s){ spy.observe(s); });
+  }
+
+  /* ============================================================
+     Hero widget — draggable-by-slider line fit
+     ============================================================ */
+  (function heroWidget(){
+    var canvas = document.getElementById('heroCanvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var mInput = document.getElementById('heroM');
+    var bInput = document.getElementById('heroB');
+    var mVal = document.getElementById('heroMVal');
+    var bVal = document.getElementById('heroBVal');
+    var costOut = document.getElementById('heroCost');
+    var bestBtn = document.getElementById('heroBest');
+
+    var view = { x0:0, x1:10, y0:-6, y1:14 };
+    function toPx(x,y){
+      var px = (x-view.x0)/(view.x1-view.x0)*canvas.width;
+      var py = canvas.height - (y-view.y0)/(view.y1-view.y0)*canvas.height;
+      return [px,py];
+    }
+
+    function draw(){
+      var m = parseFloat(mInput.value);
+      var b = parseFloat(bInput.value);
+      mVal.textContent = m.toFixed(2);
+      bVal.textContent = b.toFixed(2);
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      ctx.strokeStyle = 'rgba(180,205,230,0.08)';
+      ctx.lineWidth = 1;
+      for(var gx=view.x0; gx<=view.x1; gx+=1){
+        var pxg = toPx(gx,0)[0];
+        ctx.beginPath(); ctx.moveTo(pxg,0); ctx.lineTo(pxg,canvas.height); ctx.stroke();
+      }
+      for(var gy=-6; gy<=view.y1; gy+=2){
+        var pyg = toPx(0,gy)[1];
+        ctx.beginPath(); ctx.moveTo(0,pyg); ctx.lineTo(canvas.width,pyg); ctx.stroke();
+      }
+      ctx.strokeStyle = 'rgba(180,205,230,0.28)';
+      var zy = toPx(0,0)[1];
+      ctx.beginPath(); ctx.moveTo(0,zy); ctx.lineTo(canvas.width,zy); ctx.stroke();
+      var zx = toPx(0,0)[0];
+      ctx.beginPath(); ctx.moveTo(zx,0); ctx.lineTo(zx,canvas.height); ctx.stroke();
+
+      ctx.strokeStyle = getCss('--red');
+      ctx.lineWidth = 1.5;
+      TX.forEach(function(x,i){
+        var y = TY[i];
+        var yhat = m*x+b;
+        var p1 = toPx(x,y), p2 = toPx(x,yhat);
+        ctx.beginPath(); ctx.moveTo(p1[0],p1[1]); ctx.lineTo(p2[0],p2[1]); ctx.stroke();
+      });
+
+      var l0 = toPx(view.x0, m*view.x0+b);
+      var l1 = toPx(view.x1, m*view.x1+b);
+      ctx.strokeStyle = getCss('--teal');
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(l0[0],l0[1]); ctx.lineTo(l1[0],l1[1]); ctx.stroke();
+
+      ctx.fillStyle = getCss('--copper');
+      TX.forEach(function(x,i){
+        var p = toPx(x,TY[i]);
+        ctx.beginPath(); ctx.arc(p[0],p[1],6,0,Math.PI*2); ctx.fill();
+      });
+
+      costOut.textContent = costAt(m,b,TX,TY).toFixed(3);
+    }
+
+    mInput.addEventListener('input', draw);
+    bInput.addEventListener('input', draw);
+    bestBtn.addEventListener('click', function(){
+      var fit = olsBestFit(TX,TY);
+      mInput.value = fit[0].toFixed(2);
+      bInput.value = fit[1].toFixed(2);
+      draw();
+    });
+    draw();
+  })();
+
+  /* ============================================================
+     Cost surface widget (Stage 3)
+     ============================================================ */
+  (function surfaceWidget(){
+    var canvas = document.getElementById('surfaceCanvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var datasetSel = document.getElementById('surfaceDataset');
+    var resetBtn = document.getElementById('surfaceReset');
+    var readout = document.getElementById('surfaceCostReadout');
+
+    var view = { mMin:-3, mMax:3, bMin:-5, bMax:12 };
+    var marker = null;
+    var bgCache = null;
+
+    function currentData(){
+      return datasetSel.value === '1' ? { xs:[2], ys:[3] } : { xs:TX, ys:TY };
+    }
+
+    function computeBackground(){
+      var data = currentData();
+      var w = canvas.width, h = canvas.height, res = 2;
+      var gw = Math.floor(w/res), gh = Math.floor(h/res);
+      var costs = new Float64Array(gw*gh);
+      var minC = Infinity, maxC = -Infinity;
+      for(var j=0;j<gh;j++){
+        var b = view.bMax - (j/(gh-1))*(view.bMax-view.bMin);
+        for(var i=0;i<gw;i++){
+          var m = view.mMin + (i/(gw-1))*(view.mMax-view.mMin);
+          var c = costAt(m,b,data.xs,data.ys);
+          costs[j*gw+i] = c;
+          if(c<minC) minC=c;
+          if(c>maxC) maxC=c;
+        }
+      }
+      var img = ctx.createImageData(w,h);
+      var logMin = Math.log1p(minC), logMax = Math.log1p(maxC);
+      var low = [28,61,90], high = [232,163,61];
+      for(var j2=0;j2<gh;j2++){
+        for(var i2=0;i2<gw;i2++){
+          var c2 = costs[j2*gw+i2];
+          var t = (Math.log1p(c2)-logMin)/((logMax-logMin)||1);
+          t = Math.max(0,Math.min(1,t));
+          var r = low[0]+(high[0]-low[0])*t;
+          var g = low[1]+(high[1]-low[1])*t;
+          var bl = low[2]+(high[2]-low[2])*t;
+          for(var dy=0;dy<res;dy++){
+            var py = j2*res+dy; if(py>=h) continue;
+            for(var dx=0;dx<res;dx++){
+              var px = i2*res+dx; if(px>=w) continue;
+              var idx = (py*w+px)*4;
+              img.data[idx]=r; img.data[idx+1]=g; img.data[idx+2]=bl; img.data[idx+3]=255;
+            }
+          }
+        }
+      }
+      bgCache = img;
+    }
+
+    function draw(){
+      if(!bgCache) computeBackground();
+      ctx.putImageData(bgCache,0,0);
+      if(marker){
+        var px = (marker.m-view.mMin)/(view.mMax-view.mMin)*canvas.width;
+        var py = canvas.height - (marker.b-view.bMin)/(view.bMax-view.bMin)*canvas.height;
+        ctx.fillStyle = getCss('--red');
+        ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#0a1928'; ctx.lineWidth = 2; ctx.stroke();
+      }
+    }
+
+    canvas.addEventListener('click', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var scaleX = canvas.width/rect.width, scaleY = canvas.height/rect.height;
+      var px = (e.clientX-rect.left)*scaleX, py = (e.clientY-rect.top)*scaleY;
+      var m = view.mMin + (px/canvas.width)*(view.mMax-view.mMin);
+      var b = view.bMax - (py/canvas.height)*(view.bMax-view.bMin);
+      marker = { m:m, b:b };
+      var data = currentData();
+      var c = costAt(m,b,data.xs,data.ys);
+      readout.textContent = 'm=' + m.toFixed(2) + ', b=' + b.toFixed(2) + ' → cost=' + c.toFixed(3);
+      draw();
+    });
+    datasetSel.addEventListener('change', function(){
+      marker = null; bgCache = null; readout.textContent = '–'; draw();
+    });
+    resetBtn.addEventListener('click', function(){
+      marker = null; readout.textContent = '–'; draw();
+    });
+    draw();
+  })();
+
+  /* ============================================================
+     Gradient descent explorer (Stage 5)
+     ============================================================ */
+  (function gdWidget(){
+    var canvas = document.getElementById('gdCanvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var alphaInput = document.getElementById('gdAlpha');
+    var alphaVal = document.getElementById('gdAlphaVal');
+    var m0Input = document.getElementById('gdM0');
+    var m0Val = document.getElementById('gdM0Val');
+    var b0Input = document.getElementById('gdB0');
+    var b0Val = document.getElementById('gdB0Val');
+    var runBtn = document.getElementById('gdRun');
+    var clearBtn = document.getElementById('gdClear');
+    var stepOut = document.getElementById('gdStep');
+    var costOut = document.getElementById('gdCostVal');
+    var statusOut = document.getElementById('gdStatus');
+
+    var hTop = 260, gap = 10;
+    var pView = { mMin:-3, mMax:3, bMin:-5, bMax:12 };
+    var lView = { x0:0, x1:10, y0:-6, y1:14 };
+    var timer = null;
+
+    function alpha(){ return Math.pow(10, parseFloat(alphaInput.value)); }
+    function updateLabels(){
+      var a = alpha();
+      alphaVal.textContent = a < 0.001 ? a.toExponential(2) : a.toFixed(3);
+      m0Val.textContent = parseFloat(m0Input.value).toFixed(1);
+      b0Val.textContent = parseFloat(b0Input.value).toFixed(1);
+    }
+
+    function toPxTop(x,y){
+      var px = (x-lView.x0)/(lView.x1-lView.x0)*canvas.width;
+      var py = hTop - (y-lView.y0)/(lView.y1-lView.y0)*hTop;
+      return [px,py];
+    }
+    function toPxBottom(m,b){
+      var hBot = canvas.height - hTop - gap;
+      var px = (m-pView.mMin)/(pView.mMax-pView.mMin)*canvas.width;
+      var py = hTop + gap + hBot - (b-pView.bMin)/(pView.bMax-pView.bMin)*hBot;
+      return [px,py];
+    }
+
+    function drawFrame(m,b,path){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      ctx.strokeStyle = 'rgba(180,205,230,0.08)';
+      ctx.lineWidth = 1;
+      for(var gx=lView.x0; gx<=lView.x1; gx+=2){
+        var pxg = toPxTop(gx,0)[0];
+        ctx.beginPath(); ctx.moveTo(pxg,0); ctx.lineTo(pxg,hTop); ctx.stroke();
+      }
+
+      var l0 = toPxTop(lView.x0, m*lView.x0+b);
+      var l1 = toPxTop(lView.x1, m*lView.x1+b);
+      ctx.strokeStyle = getCss('--teal'); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(l0[0],l0[1]); ctx.lineTo(l1[0],l1[1]); ctx.stroke();
+
+      ctx.fillStyle = getCss('--copper');
+      TX.forEach(function(x,i){
+        var p = toPxTop(x,TY[i]);
+        ctx.beginPath(); ctx.arc(p[0],p[1],5,0,Math.PI*2); ctx.fill();
+      });
+
+      ctx.strokeStyle = 'rgba(180,205,230,0.15)';
+      ctx.strokeRect(0, hTop+gap, canvas.width, canvas.height-hTop-gap);
+
+      if(path.length>1){
+        ctx.strokeStyle = getCss('--red'); ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        path.forEach(function(p,idx){
+          var xy = toPxBottom(p[0],p[1]);
+          if(idx===0) ctx.moveTo(xy[0],xy[1]); else ctx.lineTo(xy[0],xy[1]);
+        });
+        ctx.stroke();
+      }
+      if(path.length){
+        var last = path[path.length-1];
+        var xyl = toPxBottom(last[0],last[1]);
+        ctx.fillStyle = getCss('--red');
+        ctx.beginPath(); ctx.arc(xyl[0],xyl[1],4,0,Math.PI*2); ctx.fill();
+      }
+      var best = olsBestFit(TX,TY);
+      var xyb = toPxBottom(best[0],best[1]);
+      ctx.strokeStyle = getCss('--green'); ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(xyb[0]-5,xyb[1]); ctx.lineTo(xyb[0]+5,xyb[1]);
+      ctx.moveTo(xyb[0],xyb[1]-5); ctx.lineTo(xyb[0],xyb[1]+5);
+      ctx.stroke();
+    }
+
+    function drawStatic(){
+      var m0 = parseFloat(m0Input.value), b0 = parseFloat(b0Input.value);
+      drawFrame(m0,b0,[[m0,b0]]);
+      stepOut.textContent = '0';
+      costOut.textContent = costAt(m0,b0,TX,TY).toFixed(3);
+      statusOut.textContent = 'ready';
+      statusOut.style.color = getCss('--teal');
+    }
+
+    function run(){
+      if(timer) clearInterval(timer);
+      var a = alpha();
+      var m = parseFloat(m0Input.value), b = parseFloat(b0Input.value);
+      var history = [[m,b]];
+      var N = 60;
+      for(var i=0;i<N;i++){
+        var g = gradAt(m,b,TX,TY);
+        m = m - a*g[0];
+        b = b - a*g[1];
+        history.push([m,b]);
+        if(!isFinite(m) || !isFinite(b) || Math.abs(m)>1e12 || Math.abs(b)>1e12) break;
+      }
+      var frame = 0;
+      timer = setInterval(function(){
+        if(frame >= history.length){ clearInterval(timer); finalize(history); return; }
+        var p = history[frame];
+        drawFrame(p[0], p[1], history.slice(0,frame+1));
+        stepOut.textContent = String(frame);
+        var c = costAt(p[0],p[1],TX,TY);
+        costOut.textContent = isFinite(c) ? (c>1e6 ? c.toExponential(2) : c.toFixed(3)) : 'Infinity';
+        frame++;
+      }, 40);
+    }
+
+    function finalize(history){
+      var costs = history.map(function(p){ return costAt(p[0],p[1],TX,TY); });
+      var last = costs[costs.length-1];
+      if(!isFinite(last) || last > 1e6){
+        statusOut.textContent = 'diverging';
+        statusOut.style.color = getCss('--red');
+        return;
+      }
+      var tail = costs.slice(-10);
+      var mean = tail.reduce(function(a,c){return a+c;},0)/tail.length;
+      var variance = tail.reduce(function(a,c){return a+(c-mean)*(c-mean);},0)/tail.length;
+      var relSpread = mean>1e-9 ? Math.sqrt(variance)/mean : 0;
+
+      // A flat recent trajectory isn't proof of convergence on an ill-conditioned
+      // surface like this one — the steep direction goes flat almost immediately
+      // while the shallow direction keeps crawling for a long time afterward.
+      // Check distance from the true minimum too (already computed for the
+      // green crosshair marker) before calling it "converged".
+      var best = olsBestFit(TX,TY);
+      var trueMin = costAt(best[0],best[1],TX,TY);
+      var relGap = trueMin>1e-9 ? (last-trueMin)/trueMin : (last-trueMin);
+
+      if(relSpread > 0.05 && mean > 1e-6){
+        statusOut.textContent = 'oscillating';
+        statusOut.style.color = getCss('--copper-bright');
+      } else if(relGap > 0.02){
+        statusOut.textContent = 'still converging';
+        statusOut.style.color = getCss('--copper-bright');
+      } else {
+        statusOut.textContent = 'converged';
+        statusOut.style.color = getCss('--green');
+      }
+    }
+
+    [alphaInput,m0Input,b0Input].forEach(function(el){
+      el.addEventListener('input', function(){ updateLabels(); if(timer) clearInterval(timer); drawStatic(); });
+    });
+    runBtn.addEventListener('click', run);
+    clearBtn.addEventListener('click', function(){ if(timer) clearInterval(timer); drawStatic(); });
+
+    updateLabels();
+    drawStatic();
+  })();
+
+  /* ============================================================
+     Newton vs. gradient descent (Stage 8)
+     ============================================================ */
+  (function newtonWidget(){
+    var canvas = document.getElementById('newtonCanvas');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var m0Input = document.getElementById('nwM0');
+    var b0Input = document.getElementById('nwB0');
+    var alphaInput = document.getElementById('nwAlpha');
+    var m0Val = document.getElementById('nwM0Val');
+    var b0Val = document.getElementById('nwB0Val');
+    var alphaVal = document.getElementById('nwAlphaVal');
+    var runBtn = document.getElementById('nwRun');
+    var newtonStepsOut = document.getElementById('nwNewtonSteps');
+    var gdStepsOut = document.getElementById('nwGdSteps');
+
+    var view = { mMin:-3, mMax:3, bMin:-5, bMax:12 };
+    var bgCache = null;
+
+    function toPx(m,b){
+      var px = (m-view.mMin)/(view.mMax-view.mMin)*canvas.width;
+      var py = canvas.height - (b-view.bMin)/(view.bMax-view.bMin)*canvas.height;
+      return [px,py];
+    }
+
+    function computeBackground(){
+      var w = canvas.width, h = canvas.height, res = 3;
+      var gw = Math.floor(w/res), gh = Math.floor(h/res);
+      var costs = new Float64Array(gw*gh);
+      var minC = Infinity, maxC = -Infinity;
+      for(var j=0;j<gh;j++){
+        var b = view.bMax - (j/(gh-1))*(view.bMax-view.bMin);
+        for(var i=0;i<gw;i++){
+          var m = view.mMin + (i/(gw-1))*(view.mMax-view.mMin);
+          var c = costAt(m,b,TX,TY);
+          costs[j*gw+i]=c;
+          if(c<minC) minC=c;
+          if(c>maxC) maxC=c;
+        }
+      }
+      var img = ctx.createImageData(w,h);
+      var logMin=Math.log1p(minC), logMax=Math.log1p(maxC);
+      var low=[17,41,67], high=[169,115,40];
+      for(var j2=0;j2<gh;j2++){
+        for(var i2=0;i2<gw;i2++){
+          var c2 = costs[j2*gw+i2];
+          var t = (Math.log1p(c2)-logMin)/((logMax-logMin)||1);
+          t = Math.max(0,Math.min(1,t));
+          var r=low[0]+(high[0]-low[0])*t, g=low[1]+(high[1]-low[1])*t, bl=low[2]+(high[2]-low[2])*t;
+          for(var dy=0;dy<res;dy++){
+            var py = j2*res+dy; if(py>=h) continue;
+            for(var dx=0;dx<res;dx++){
+              var px = i2*res+dx; if(px>=w) continue;
+              var idx=(py*w+px)*4;
+              img.data[idx]=r; img.data[idx+1]=g; img.data[idx+2]=bl; img.data[idx+3]=255;
+            }
+          }
+        }
+      }
+      bgCache = img;
+    }
+
+    function hessian(){
+      var sxx=0, sx=0, n=TX.length;
+      TX.forEach(function(x){ sxx += x*x; sx += x; });
+      return [[2*sxx, 2*sx],[2*sx, 2*n]];
+    }
+
+    function updateLabels(){
+      m0Val.textContent = parseFloat(m0Input.value).toFixed(1);
+      b0Val.textContent = parseFloat(b0Input.value).toFixed(1);
+      alphaVal.textContent = parseFloat(alphaInput.value).toFixed(3);
+    }
+
+    function run(){
+      if(!bgCache) computeBackground();
+      ctx.putImageData(bgCache,0,0);
+
+      var m0 = parseFloat(m0Input.value), b0 = parseFloat(b0Input.value), a = parseFloat(alphaInput.value);
+
+      var H = hessian();
+      var Hinv = invert2x2(H);
+      var g0 = gradAt(m0,b0,TX,TY);
+      var stepM = Hinv[0][0]*g0[0] + Hinv[0][1]*g0[1];
+      var stepB = Hinv[1][0]*g0[0] + Hinv[1][1]*g0[1];
+      var newtonM = m0 - stepM, newtonB = b0 - stepB;
+
+      var n0 = toPx(m0,b0), n1 = toPx(newtonM,newtonB);
+      ctx.strokeStyle = getCss('--copper'); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(n0[0],n0[1]); ctx.lineTo(n1[0],n1[1]); ctx.stroke();
+      ctx.fillStyle = getCss('--copper');
+      [n0,n1].forEach(function(p){ ctx.beginPath(); ctx.arc(p[0],p[1],5,0,Math.PI*2); ctx.fill(); });
+
+      var m = m0, b = b0;
+      var path = [[m,b]];
+      var maxIter = 3000, tol = 0.01, steps = Infinity;
+      for(var i=0;i<maxIter;i++){
+        var g = gradAt(m,b,TX,TY);
+        m = m - a*g[0]; b = b - a*g[1];
+        path.push([m,b]);
+        if(!isFinite(m) || !isFinite(b) || Math.abs(m)>1e8 || Math.abs(b)>1e8){ steps = Infinity; break; }
+        if(Math.hypot(m-newtonM, b-newtonB) < tol){ steps = i+1; break; }
+      }
+      ctx.strokeStyle = getCss('--teal'); ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      path.forEach(function(p,idx){
+        var xy = toPx(p[0],p[1]);
+        if(idx===0) ctx.moveTo(xy[0],xy[1]); else ctx.lineTo(xy[0],xy[1]);
+      });
+      ctx.stroke();
+
+      newtonStepsOut.textContent = '1';
+      gdStepsOut.textContent = isFinite(steps) ? String(steps) : ('diverged (>'+maxIter+')');
+    }
+
+    [m0Input,b0Input,alphaInput].forEach(function(el){ el.addEventListener('input', updateLabels); });
+    runBtn.addEventListener('click', run);
+
+    updateLabels();
+    computeBackground();
+    ctx.putImageData(bgCache,0,0);
+  })();
+
+  /* ============================================================
+     Dimension explorer (Stage 9)
+     ============================================================ */
+  (function dimWidget(){
+    var nInput = document.getElementById('dimN');
+    if(!nInput) return;
+    var mInput = document.getElementById('dimM');
+    var orientSel = document.getElementById('dimOrient');
+    var nVal = document.getElementById('dimNVal');
+    var mVal = document.getElementById('dimMVal');
+    var vis = document.getElementById('dimVis');
+    var readout = document.getElementById('dimReadout');
+
+    function box(dimsText, name){
+      var d = document.createElement('div');
+      d.className = 'matbox';
+      var dims = document.createElement('div'); dims.className='dims'; dims.textContent = dimsText;
+      var nm = document.createElement('div'); nm.className='name'; nm.textContent = name;
+      d.appendChild(dims); d.appendChild(nm);
+      return d;
+    }
+
+    function render(){
+      var n = parseInt(nInput.value,10);
+      var m = parseInt(mInput.value,10);
+      nVal.textContent = n;
+      mVal.textContent = m;
+      var orient = orientSel.value;
+
+      vis.innerHTML = '';
+      var dataDims = orient === 'sf' ? (m + ' × ' + (n+1)) : (n + ' × ' + m);
+      vis.appendChild(box(dataDims, orient==='sf' ? 'data (incl. target col)' : 'data'));
+      var arrow = document.createElement('div');
+      arrow.textContent = '↦';
+      arrow.style.color = 'var(--ink-faint)';
+      arrow.style.fontSize = '18px';
+      vis.appendChild(arrow);
+      vis.appendChild(box('(' + (n+1) + ',)', 'param (weights + bias)'));
+
+      if(orient === 'sf'){
+        readout.innerHTML = 'In this orientation, <code>data</code> has ' + m + ' rows and ' + (n+1) +
+          ' columns (the last holding the target). <code>data[i]</code> is one full sample — feature values for ' +
+          'sample i plus its target. <code>data[i][j]</code> is feature j of sample i, for j from 0 to ' + (n-1) + '.';
+      } else {
+        readout.innerHTML = 'In this orientation, <code>data</code> is a list of ' + n + ' feature arrays, each of ' +
+          'length ' + m + '. <code>data[0]</code> is the entire first feature\'s values across all ' + m +
+          ' samples — not one sample. <code>data[j][i]</code> is feature j\'s value for sample i.';
+      }
+    }
+
+    [nInput,mInput,orientSel].forEach(function(el){ el.addEventListener('input', render); el.addEventListener('change', render); });
+    render();
+  })();
+
+  /* ============================================================
+     Vectorization step-through (Stage 10)
+     ============================================================ */
+  (function vecWidget(){
+    var wrap = document.getElementById('vecTableWrap');
+    if(!wrap) return;
+    var playBtn = document.getElementById('vecPlayLoop');
+    var vectorizeBtn = document.getElementById('vecVectorize');
+    var resetBtn = document.getElementById('vecReset');
+    var runningOut = document.getElementById('vecRunning');
+    var timer = null;
+    var M = 1, B = 0;
+
+    function buildTable(){
+      var html = '<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;">';
+      html += '<thead><tr style="color:var(--ink-faint);text-align:left;">' +
+        '<th style="padding:6px 8px;">i</th><th style="padding:6px 8px;">x&#8290;\u1D62</th>' +
+        '<th style="padding:6px 8px;">y&#8290;\u1D62</th>' +
+        '<th style="padding:6px 8px;">error&#8290;\u1D62 = m&middot;x&#8290;\u1D62+b&minus;y&#8290;\u1D62</th>' +
+        '<th style="padding:6px 8px;">x&#8290;\u1D62&middot;error&#8290;\u1D62</th></tr></thead><tbody>';
+      TX.forEach(function(x,i){
+        var y = TY[i];
+        var err = M*x+B-y;
+        var contrib = x*err;
+        html += '<tr id="vecRow'+i+'" style="border-top:1px solid var(--border-soft); transition:background .2s;">' +
+          '<td style="padding:6px 8px;">'+i+'</td><td style="padding:6px 8px;">'+x+'</td>' +
+          '<td style="padding:6px 8px;">'+y+'</td><td style="padding:6px 8px;">'+err.toFixed(1)+'</td>' +
+          '<td style="padding:6px 8px;">'+contrib.toFixed(1)+'</td></tr>';
+      });
+      html += '</tbody></table>';
+      html += '<p style="font-size:12px;color:var(--ink-faint);margin:10px 0 0;">Using m=1, b=0 for round, hand-checkable numbers.</p>';
+      wrap.innerHTML = html;
+    }
+
+    function resetRows(){
+      TX.forEach(function(_,i){
+        var row = document.getElementById('vecRow'+i);
+        if(row) row.style.background = '';
+      });
+      runningOut.textContent = '0.00';
+    }
+
+    function playLoop(){
+      if(timer) clearInterval(timer);
+      resetRows();
+      var i = 0, running = 0;
+      timer = setInterval(function(){
+        if(i > 0){
+          var prevRow = document.getElementById('vecRow'+(i-1));
+          if(prevRow) prevRow.style.background = 'rgba(95,208,192,0.10)';
+        }
+        if(i >= TX.length){ clearInterval(timer); return; }
+        var row = document.getElementById('vecRow'+i);
+        if(row) row.style.background = 'rgba(95,208,192,0.28)';
+        var err = M*TX[i]+B-TY[i];
+        running += TX[i]*err;
+        runningOut.textContent = running.toFixed(2);
+        i++;
+      }, 500);
+    }
+
+    function vectorizeAll(){
+      if(timer) clearInterval(timer);
+      var running = 0;
+      TX.forEach(function(x,i){
+        var err = M*x+B-TY[i];
+        running += x*err;
+        var row = document.getElementById('vecRow'+i);
+        if(row) row.style.background = 'rgba(232,163,61,0.28)';
+      });
+      runningOut.textContent = running.toFixed(2);
+    }
+
+    playBtn.addEventListener('click', playLoop);
+    vectorizeBtn.addEventListener('click', vectorizeAll);
+    resetBtn.addEventListener('click', function(){ if(timer) clearInterval(timer); resetRows(); });
+
+    buildTable();
+  })();
+
+})();
+</script>
+</body>
+</html>
